@@ -9,3 +9,23 @@
   <li>Como agente de banco, eu quero associar contratos de crédito aos pedidos de aluguel para permitir financiamentos.</li>
   <li>Como agente, eu quero modificar contratos para ajustar cláusulas ou valores.</li>
 </ul>
+
+
+## Diagrama de Casos de Uso
+<br>
+<img src="Artefatos/Diagrama Casos de Uso.jpg"></img>
+
+
+## Diagrama de Pacotes
+<br>
+<img src="Artefatos/Diagrama de Pacotes.pdf"></img>
+
+
+## Diagrama de Classes
+<br>
+<img src="Artefatos/Diagrama de Classes.jpg"></img>
+
+
+## Diagrama de Componentes
+<br>
+<img src="Artefatos/Diagrama de Componentes.jpeg"></img>
