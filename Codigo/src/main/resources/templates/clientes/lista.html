@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Clientes</title>
+    <th:block th:replace="fragments/layout :: common_head"></th:block>
+</head>
+<body>
+<section class="container py-4">
+    <h1>Clientes</h1>
+    <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
+    <div th:if="${erro}" class="alert alert-danger" th:text="${erro}"></div>
+    <a class="btn btn-primary mb-3" th:href="@{/clientes/novo}">Novo Cliente</a>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>CPF</th>
+            <th>Email</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="c : ${clientes}">
+            <td th:text="${c.id}"></td>
+            <td>
+                <a th:href="@{|/clientes/${c.id}|}" th:text="${c.nomeCompleto}"></a>
+            </td>
+            <td th:text="${c.cpf}"></td>
+            <td th:text="${c.email}"></td>
+            <td>
+                <a class="btn btn-sm btn-secondary" th:href="@{|/clientes/${c.id}/editar|}">Editar</a>
+                <form th:action="@{|/clientes/${c.id}/excluir|}" method="post" style="display:inline">
+                    <button class="btn btn-sm btn-danger" type="submit" onclick="return confirm('Excluir?')">Excluir</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+<th:block th:replace="fragments/layout :: common_scripts"></th:block>
+</body>
+</html>
+
+

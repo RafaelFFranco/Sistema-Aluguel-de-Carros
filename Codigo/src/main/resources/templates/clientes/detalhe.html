@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Detalhe do Cliente</title>
+    <th:block th:replace="fragments/layout :: common_head"></th:block>
+    <meta charset="UTF-8" />
+</head>
+<body>
+<section class="container py-4">
+<h1 th:text="${cliente.nomeCompleto}"></h1>
+<dl class="row">
+    <dt class="col-sm-2">CPF</dt><dd class="col-sm-10" th:text="${cliente.cpf}"></dd>
+    <dt class="col-sm-2">RG</dt><dd class="col-sm-10" th:text="${cliente.rg}"></dd>
+    <dt class="col-sm-2">Email</dt><dd class="col-sm-10" th:text="${cliente.email}"></dd>
+    <dt class="col-sm-2">Telefone</dt><dd class="col-sm-10" th:text="${cliente.telefone}"></dd>
+    <dt class="col-sm-2">Nascimento</dt><dd class="col-sm-10" th:text="${cliente.dataNascimento}"></dd>
+    <dt class="col-sm-2">Endereço</dt><dd class="col-sm-10" th:text="${cliente.endereco}"></dd>
+    <dt class="col-sm-2">Profissão</dt><dd class="col-sm-10" th:text="${cliente.profissao}"></dd>
+    <dt class="col-sm-2">Empregadores</dt><dd class="col-sm-10" th:text="${cliente.empregadoresResumo}"></dd>
+    <dt class="col-sm-2">Rendimentos</dt><dd class="col-sm-10" th:text="${cliente.rendimentosResumo}"></dd>
+</dl>
+<a class="btn btn-secondary" th:href="@{/clientes}">Voltar</a>
+<a class="btn btn-primary" th:href="@{|/clientes/${cliente.id}/editar|}">Editar</a>
+</section>
+<th:block th:replace="fragments/layout :: common_scripts"></th:block>
+</body>
+</html>
+
+

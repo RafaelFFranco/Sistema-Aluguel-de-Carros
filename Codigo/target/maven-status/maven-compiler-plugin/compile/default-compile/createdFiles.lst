@@ -1,0 +1,6 @@
+br\pucminas\sac\cliente\ClienteService.class
+br\pucminas\sac\HomeController.class
+br\pucminas\sac\cliente\ClienteController.class
+br\pucminas\sac\cliente\ClienteRepository.class
+br\pucminas\sac\cliente\Cliente.class
+br\pucminas\sac\SacApplication.class
