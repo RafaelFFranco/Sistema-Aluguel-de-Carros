@@ -18,7 +18,7 @@
 
 ## Diagrama de Pacotes
 <br>
-<img src="Artefatos/Diagrama de Pacotes.pdf"></img>
+<img src="Artefatos/Diagrama de Pacotes.png"></img>
 
 
 ## Diagrama de Classes
