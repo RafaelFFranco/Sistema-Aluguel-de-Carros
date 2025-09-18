@@ -1,6 +1,11 @@
-br\pucminas\sac\cliente\ClienteService.class
 br\pucminas\sac\HomeController.class
-br\pucminas\sac\cliente\ClienteController.class
-br\pucminas\sac\cliente\ClienteRepository.class
-br\pucminas\sac\cliente\Cliente.class
+br\pucminas\sac\pedido\model\PedidoAluguel.class
+br\pucminas\sac\pedido\PedidoAluguelService.class
+br\pucminas\sac\pedido\model\PedidoAluguel$StatusPedido.class
+br\pucminas\sac\pedido\repository\PedidoAluguelRepository.class
+br\pucminas\sac\cliente\controller\ClienteController.class
+br\pucminas\sac\pedido\controller\PedidoAluguelController.class
+br\pucminas\sac\cliente\ClienteService.class
 br\pucminas\sac\SacApplication.class
+br\pucminas\sac\cliente\repository\ClienteRepository.class
+br\pucminas\sac\cliente\model\Cliente.class

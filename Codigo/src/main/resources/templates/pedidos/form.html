@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Novo Pedido de Aluguel</title>
+    <th:block th:replace="fragments/layout :: common_head"></th:block>
+    <meta charset="UTF-8" />
+</head>
+<body>
+<nav style="margin-bottom: 20px;">
+    <a class="btn btn-primary" th:href="@{/clientes}">Clientes</a>
+    <a class="btn btn-primary" th:href="@{/pedidos}">Pedidos</a>
+    <a class="btn btn-success" th:href="@{/pedidos/novo}">Novo Pedido</a>
+</nav>
+<section class="container py-4">
+    <h1>Novo Pedido de Aluguel</h1>
+    <form th:action="@{/pedidos}" th:object="${pedidoAluguel}" method="post" class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label">ID do Cliente</label>
+            <input class="form-control" th:field="*{cliente.id}" required />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Carro</label>
+            <select class="form-select" th:field="*{carro}" required>
+                <option value="" disabled selected>Selecione um carro</option>
+                <option value="Fiat Uno">Fiat Uno</option>
+                <option value="Volkswagen Gol">Volkswagen Gol</option>
+                <option value="Chevrolet Onix">Chevrolet Onix</option>
+                <option value="Ford Ka">Ford Ka</option>
+                <option value="Renault Kwid">Renault Kwid</option>
+                <option value="Hyundai HB20">Hyundai HB20</option>
+                <option value="Honda Fit">Honda Fit</option>
+                <option value="Jeep Renegade">Jeep Renegade</option>
+                <option value="Toyota Corolla">Toyota Corolla</option>
+                <option value="Nissan Versa">Nissan Versa</option>
+            </select>
+        </div>
+        <div class="col-12">
+            <button class="btn btn-secondary" type="button" onclick="window.location.href='/clientes'">Cancelar</button>
+            <button class="btn btn-primary" type="submit">Criar Pedido</button>
+        </div>
+    </form>
+</section>
+<th:block th:replace="fragments/layout :: common_scripts"></th:block>
+</body>
+</html>

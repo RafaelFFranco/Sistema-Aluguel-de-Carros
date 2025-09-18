@@ -6,6 +6,11 @@
     <meta charset="UTF-8" />
 </head>
 <body>
+<nav style="margin-bottom: 20px;">
+    <a class="btn btn-primary" th:href="@{/clientes}">Clientes</a>
+    <a class="btn btn-primary" th:href="@{/pedidos}">Pedidos</a>
+    <a class="btn btn-success" th:href="@{/pedidos/novo}">Novo Pedido</a>
+</nav>
 <section class="container py-4">
 <h1 th:text="${cliente.nomeCompleto}"></h1>
 <dl class="row">

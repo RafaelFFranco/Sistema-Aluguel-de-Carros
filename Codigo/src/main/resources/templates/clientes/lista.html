@@ -5,6 +5,11 @@
     <th:block th:replace="fragments/layout :: common_head"></th:block>
 </head>
 <body>
+<nav style="margin-bottom: 20px;">
+    <a class="btn btn-primary" th:href="@{/clientes}">Clientes</a>
+    <a class="btn btn-primary" th:href="@{/pedidos}">Pedidos</a>
+    <a class="btn btn-success" th:href="@{/pedidos/novo}">Novo Pedido</a>
+</nav>
 <section class="container py-4">
     <h1>Clientes</h1>
     <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>

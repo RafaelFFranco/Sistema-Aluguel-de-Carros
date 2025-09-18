@@ -1,11 +1,25 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
     <title>Cliente</title>
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" />
+    <th:block th:replace="fragments/layout :: common_head"></th:block>
+    <meta charset="UTF-8" />
+    
+    <style>
+        .text-danger { font-size: .9rem; }
+    </style>
+    
+    <script>
+        function voltarLista() { window.location.href = '/clientes'; }
+    </script>
 </head>
-<body class="container py-4">
+<body>
+<nav style="margin-bottom: 20px;">
+    <a class="btn btn-primary" th:href="@{/clientes}">Clientes</a>
+    <a class="btn btn-primary" th:href="@{/pedidos}">Pedidos</a>
+    <a class="btn btn-success" th:href="@{/pedidos/novo}">Novo Pedido</a>
+</nav>
+<section class="container py-4">
 <h1 th:text="${cliente.id} != null ? 'Editar Cliente' : 'Novo Cliente'"></h1>
 <form th:action="${cliente.id} != null ? @{|/clientes/${cliente.id}|} : @{/clientes}" th:object="${cliente}" method="post" class="row g-3">
     <div class="col-md-6">
@@ -57,10 +71,12 @@
         <input class="form-control" th:field="*{rendimentosResumo}" />
     </div>
     <div class="col-12">
-        <a class="btn btn-secondary" th:href="@{/clientes}">Cancelar</a>
+        <button class="btn btn-secondary" type="button" onclick="voltarLista()">Cancelar</button>
         <button class="btn btn-primary" type="submit">Salvar</button>
     </div>
 </form>
+</section>
+<th:block th:replace="fragments/layout :: common_scripts"></th:block>
 </body>
 </html>
 

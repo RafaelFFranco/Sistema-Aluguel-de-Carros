@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Pedidos</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+<nav style="margin-bottom: 20px;">
+    <a class="btn btn-primary" th:href="@{/clientes}">Clientes</a>
+    <a class="btn btn-primary" th:href="@{/pedidos}">Pedidos</a>
+    <a class="btn btn-success" th:href="@{/pedidos/novo}">Novo Pedido</a>
+</nav>
+    <h1>Pedidos de Aluguel</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Carro</th>
+                <th>Data do Pedido</th>
+                <th>Status</th>
+                <th>Detalhes</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="pedido : ${pedidos}">
+                <td th:text="${pedido.id}"></td>
+                <td th:text="${pedido.cliente != null ? pedido.cliente.nomeCompleto : 'Cliente não encontrado'}"></td>
+                <td th:text="${pedido.carro}"></td>
+                <td th:text="${#temporals.format(pedido.dataPedido, 'dd/MM/yyyy HH:mm')}"></td>
+                <td th:text="${pedido.status}"></td>
+                <td><a th:href="@{'/pedidos/status/' + ${pedido.id}}">Ver detalhes</a></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
