@@ -1,4 +1,4 @@
-package br.pucminas.sac.pedido;
+package br.pucminas.sac.pedido.Service;
 
 import br.pucminas.sac.pedido.model.PedidoAluguel;
 import br.pucminas.sac.pedido.repository.PedidoAluguelRepository;

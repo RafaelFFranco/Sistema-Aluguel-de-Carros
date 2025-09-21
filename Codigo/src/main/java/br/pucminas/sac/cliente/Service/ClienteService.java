@@ -1,4 +1,4 @@
-package br.pucminas.sac.cliente.service;
+package br.pucminas.sac.cliente.Service;
 
 import br.pucminas.sac.cliente.model.Cliente;
 import br.pucminas.sac.cliente.repository.ClienteRepository;

@@ -1,7 +1,7 @@
 package br.pucminas.sac.cliente.controller;
 
 import br.pucminas.sac.cliente.model.Cliente;
-import br.pucminas.sac.cliente.service.ClienteService;
+import br.pucminas.sac.cliente.Service.ClienteService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
