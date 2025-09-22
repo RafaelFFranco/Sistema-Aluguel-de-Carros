@@ -61,6 +61,26 @@ public class Cliente {
     @Size(max = 200)
     private String rendimentosResumo;
 
+    // Empregadores detalhados (máximo 3)
+    @Size(max = 100)
+    private String empregador1;
+
+    @Size(max = 100)
+    private String empregador2;
+
+    @Size(max = 100)
+    private String empregador3;
+
+    // Rendimentos detalhados (máximo 3)
+    private Double rendimento1;
+
+    private Double rendimento2;
+
+    private Double rendimento3;
+
+    // Renda total calculada
+    private Double rendaTotal;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getNomeCompleto() { return nomeCompleto; }
@@ -83,6 +103,20 @@ public class Cliente {
     public void setEmpregadoresResumo(String empregadoresResumo) { this.empregadoresResumo = empregadoresResumo; }
     public String getRendimentosResumo() { return rendimentosResumo; }
     public void setRendimentosResumo(String rendimentosResumo) { this.rendimentosResumo = rendimentosResumo; }
+    public String getEmpregador1() { return empregador1; }
+    public void setEmpregador1(String empregador1) { this.empregador1 = empregador1; }
+    public String getEmpregador2() { return empregador2; }
+    public void setEmpregador2(String empregador2) { this.empregador2 = empregador2; }
+    public String getEmpregador3() { return empregador3; }
+    public void setEmpregador3(String empregador3) { this.empregador3 = empregador3; }
+    public Double getRendimento1() { return rendimento1; }
+    public void setRendimento1(Double rendimento1) { this.rendimento1 = rendimento1; }
+    public Double getRendimento2() { return rendimento2; }
+    public void setRendimento2(Double rendimento2) { this.rendimento2 = rendimento2; }
+    public Double getRendimento3() { return rendimento3; }
+    public void setRendimento3(Double rendimento3) { this.rendimento3 = rendimento3; }
+    public Double getRendaTotal() { return rendaTotal; }
+    public void setRendaTotal(Double rendaTotal) { this.rendaTotal = rendaTotal; }
 }
 
 

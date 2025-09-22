@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Detalhes do Agente</title>
+    <th:block th:replace="fragments/layout :: common_head"></th:block>
+</head>
+<body>
+<nav style="margin-bottom: 20px;">
+    <a class="btn btn-primary" th:href="@{/clientes}">Clientes</a>
+    <a class="btn btn-primary" th:href="@{/pedidos}">Pedidos</a>
+    <a class="btn btn-primary" th:href="@{/automoveis}">Automóveis</a>
+    <a class="btn btn-primary" th:href="@{/agentes}">Agentes</a>
+    <a class="btn btn-primary" th:href="@{/avaliacoes}">Avaliações</a>
+    <a class="btn btn-success" th:href="@{/pedidos/novo}">Novo Pedido</a>
+</nav>
+<section class="container py-4">
+    <h1>Detalhes do Agente</h1>
+    <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
+    <div th:if="${erro}" class="alert alert-danger" th:text="${erro}"></div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Informações do Agente</h5>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">ID</dt>
+                <dd class="col-sm-9" th:text="${agente.id}"></dd>
+                
+                <dt class="col-sm-3">Nome</dt>
+                <dd class="col-sm-9" th:text="${agente.nome}"></dd>
+                
+                <dt class="col-sm-3">CNPJ</dt>
+                <dd class="col-sm-9" th:text="${agente.cnpj}"></dd>
+                
+                <dt class="col-sm-3">Email</dt>
+                <dd class="col-sm-9" th:text="${agente.email}"></dd>
+                
+                <dt class="col-sm-3">Telefone</dt>
+                <dd class="col-sm-9" th:text="${agente.telefone}"></dd>
+                
+                <dt class="col-sm-3">Endereço</dt>
+                <dd class="col-sm-9" th:text="${agente.endereco}"></dd>
+                
+                <dt class="col-sm-3">Tipo</dt>
+                <dd class="col-sm-9">
+                    <span class="badge fs-6" 
+                          th:classappend="${agente.tipo.name() == 'BANCO'} ? 'bg-primary' : 'bg-info'"
+                          th:text="${agente.tipo}"></span>
+                </dd>
+                
+                <dt class="col-sm-3">Capital Social</dt>
+                <dd class="col-sm-9" th:text="${#numbers.formatCurrency(agente.capitalSocial)}"></dd>
+                
+                <dt class="col-sm-3">Status</dt>
+                <dd class="col-sm-9">
+                    <span class="badge fs-6" 
+                          th:classappend="${agente.status.name() == 'ATIVO'} ? 'bg-success' : 
+                                        (${agente.status.name() == 'INATIVO'} ? 'bg-secondary' : 'bg-warning')"
+                          th:text="${agente.status}"></span>
+                </dd>
+            </dl>
+        </div>
+    </div>
+    
+    <div class="mt-3">
+        <a class="btn btn-secondary" th:href="@{/agentes}">Voltar</a>
+        <a class="btn btn-primary" th:href="@{'/agentes/' + ${agente.id} + '/editar'}">Editar</a>
+        <form th:action="@{'/agentes/' + ${agente.id} + '/excluir'}" method="post" style="display:inline">
+            <button class="btn btn-danger" type="submit" onclick="return confirm('Excluir agente?')">Excluir</button>
+        </form>
+    </div>
+</section>
+<th:block th:replace="fragments/layout :: common_scripts"></th:block>
+</body>
+</html>
+

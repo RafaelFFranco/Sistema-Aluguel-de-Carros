@@ -9,6 +9,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Optional;
+
 @Controller
 @RequestMapping("/clientes")
 public class ClienteController {
@@ -36,6 +38,19 @@ public class ClienteController {
         if (result.hasErrors()) {
             return "clientes/form";
         }
+        
+        // Verificar se CPF já existe
+        if (service.existePorCpf(cliente.getCpf())) {
+            result.rejectValue("cpf", null, "CPF já cadastrado");
+            return "clientes/form";
+        }
+        
+        // Verificar se RG já existe
+        if (service.existePorRg(cliente.getRg())) {
+            result.rejectValue("rg", null, "RG já cadastrado");
+            return "clientes/form";
+        }
+        
         service.salvar(cliente);
         return "redirect:/clientes";
     }
@@ -59,6 +74,23 @@ public class ClienteController {
         if (result.hasErrors()) {
             return "clientes/form";
         }
+        
+        // Verificar se CPF já existe em outro cliente
+        Optional<Cliente> clienteExistente = service.buscarPorId(id);
+        if (clienteExistente.isPresent()) {
+            Cliente existente = clienteExistente.get();
+            // Se o CPF mudou, verificar se já existe
+            if (!existente.getCpf().equals(cliente.getCpf()) && service.existePorCpf(cliente.getCpf())) {
+                result.rejectValue("cpf", null, "CPF já cadastrado");
+                return "clientes/form";
+            }
+            // Se o RG mudou, verificar se já existe
+            if (!existente.getRg().equals(cliente.getRg()) && service.existePorRg(cliente.getRg())) {
+                result.rejectValue("rg", null, "RG já cadastrado");
+                return "clientes/form";
+            }
+        }
+        
         cliente.setId(id);
         service.salvar(cliente);
         return "redirect:/clientes";

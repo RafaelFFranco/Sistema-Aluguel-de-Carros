@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Automóvel</title>
+    <th:block th:replace="fragments/layout :: common_head"></th:block>
+</head>
+<body>
+<nav style="margin-bottom: 20px;">
+    <a class="btn btn-primary" th:href="@{/clientes}">Clientes</a>
+    <a class="btn btn-primary" th:href="@{/pedidos}">Pedidos</a>
+    <a class="btn btn-primary" th:href="@{/automoveis}">Automóveis</a>
+    <a class="btn btn-primary" th:href="@{/agentes}">Agentes</a>
+    <a class="btn btn-primary" th:href="@{/avaliacoes}">Avaliações</a>
+    <a class="btn btn-success" th:href="@{/pedidos/novo}">Novo Pedido</a>
+</nav>
+<section class="container py-4">
+    <h1 th:text="${automovel.id != null ? 'Editar Automóvel' : 'Novo Automóvel'}">Novo Automóvel</h1>
+    <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
+    <div th:if="${erro}" class="alert alert-danger" th:text="${erro}"></div>
+    
+    <form th:action="${automovel.id != null ? @{|/automoveis/${automovel.id}|} : @{/automoveis}}" th:object="${automovel}" method="post" class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label">Marca</label>
+            <input class="form-control" th:field="*{marca}" required />
+            <div th:if="${#fields.hasErrors('marca')}" class="text-danger" th:errors="*{marca}"></div>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Modelo</label>
+            <input class="form-control" th:field="*{modelo}" required />
+            <div th:if="${#fields.hasErrors('modelo')}" class="text-danger" th:errors="*{modelo}"></div>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Ano</label>
+            <input class="form-control" type="number" th:field="*{ano}" required />
+            <div th:if="${#fields.hasErrors('ano')}" class="text-danger" th:errors="*{ano}"></div>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Placa</label>
+            <input class="form-control" th:field="*{placa}" required />
+            <div th:if="${#fields.hasErrors('placa')}" class="text-danger" th:errors="*{placa}"></div>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Matrícula</label>
+            <input class="form-control" th:field="*{matricula}" required />
+            <div th:if="${#fields.hasErrors('matricula')}" class="text-danger" th:errors="*{matricula}"></div>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Tipo de Propriedade</label>
+            <select class="form-select" th:field="*{tipoPropriedade}" required>
+                <option value="" disabled selected>Selecione o tipo</option>
+                <option value="CLIENTE">Cliente</option>
+                <option value="EMPRESA">Empresa</option>
+                <option value="BANCO">Banco</option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">ID do Proprietário</label>
+            <input class="form-control" type="number" th:field="*{proprietarioId}" />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Status</label>
+            <select class="form-select" th:field="*{status}" required>
+                <option value="DISPONIVEL">Disponível</option>
+                <option value="ALUGADO">Alugado</option>
+                <option value="MANUTENCAO">Manutenção</option>
+                <option value="INDISPONIVEL">Indisponível</option>
+            </select>
+        </div>
+        <div class="col-12">
+            <button class="btn btn-secondary" type="button" onclick="window.location.href='/automoveis'">Cancelar</button>
+            <button class="btn btn-primary" type="submit">Salvar</button>
+        </div>
+    </form>
+</section>
+<th:block th:replace="fragments/layout :: common_scripts"></th:block>
+</body>
+</html>
+

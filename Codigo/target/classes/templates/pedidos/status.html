@@ -9,18 +9,79 @@
 <nav style="margin-bottom: 20px;">
     <a class="btn btn-primary" th:href="@{/clientes}">Clientes</a>
     <a class="btn btn-primary" th:href="@{/pedidos}">Pedidos</a>
+    <a class="btn btn-primary" th:href="@{/automoveis}">Automóveis</a>
+    <a class="btn btn-primary" th:href="@{/agentes}">Agentes</a>
+    <a class="btn btn-primary" th:href="@{/avaliacoes}">Avaliações</a>
     <a class="btn btn-success" th:href="@{/pedidos/novo}">Novo Pedido</a>
 </nav>
 <section class="container py-4">
     <h1>Status do Pedido de Aluguel</h1>
-    <dl class="row">
-    <dt class="col-sm-2">ID</dt><dd class="col-sm-10" th:text="${pedidoAluguel.id}"></dd>
-    <dt class="col-sm-2">Cliente</dt><dd class="col-sm-10" th:text="${pedidoAluguel.cliente.nomeCompleto}"></dd>
-    <dt class="col-sm-2">Carro</dt><dd class="col-sm-10" th:text="${pedidoAluguel.carro}"></dd>
-    <dt class="col-sm-2">Data do Pedido</dt><dd class="col-sm-10" th:text="${pedidoAluguel.dataPedido}"></dd>
-    <dt class="col-sm-2">Status</dt><dd class="col-sm-10" th:text="${pedidoAluguel.status}"></dd>
-    </dl>
-    <a class="btn btn-secondary" th:href="@{/clientes}">Voltar</a>
+    <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
+    <div th:if="${erro}" class="alert alert-danger" th:text="${erro}"></div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Informações do Pedido</h5>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">ID</dt>
+                <dd class="col-sm-9" th:text="${pedidoAluguel.id}"></dd>
+                
+                <dt class="col-sm-3">Cliente</dt>
+                <dd class="col-sm-9" th:text="${pedidoAluguel.cliente.nomeCompleto}"></dd>
+                
+                <dt class="col-sm-3">Automóvel</dt>
+                <dd class="col-sm-9">
+                    <span th:if="${pedidoAluguel.automovel != null}" 
+                          th:text="${pedidoAluguel.automovel.marca + ' ' + pedidoAluguel.automovel.modelo + ' (' + pedidoAluguel.automovel.placa + ')'}"></span>
+                    <span th:if="${pedidoAluguel.carro != null and pedidoAluguel.automovel == null}" 
+                          th:text="${pedidoAluguel.carro}"></span>
+                </dd>
+                
+                <dt class="col-sm-3">Data do Pedido</dt>
+                <dd class="col-sm-9" th:text="${#temporals.format(pedidoAluguel.dataPedido, 'dd/MM/yyyy HH:mm')}"></dd>
+                
+                <dt class="col-sm-3">Status</dt>
+                <dd class="col-sm-9">
+                    <span class="badge fs-6" 
+                          th:classappend="${pedidoAluguel.status.name() == 'PENDENTE'} ? 'bg-warning' : 
+                                        (${pedidoAluguel.status.name() == 'APROVADO'} ? 'bg-success' : 
+                                        (${pedidoAluguel.status.name() == 'RECUSADO'} ? 'bg-danger' : 'bg-info'))"
+                          th:text="${pedidoAluguel.status}"></span>
+                </dd>
+                
+                <dt class="col-sm-3" th:if="${pedidoAluguel.scoreFinanceiro != null}">Score Financeiro</dt>
+                <dd class="col-sm-9" th:if="${pedidoAluguel.scoreFinanceiro != null}" th:text="${pedidoAluguel.scoreFinanceiro}"></dd>
+                
+                <dt class="col-sm-3" th:if="${pedidoAluguel.agenteAvaliador != null}">Avaliador</dt>
+                <dd class="col-sm-9" th:if="${pedidoAluguel.agenteAvaliador != null}" th:text="${pedidoAluguel.agenteAvaliador.nome}"></dd>
+                
+                <dt class="col-sm-3" th:if="${pedidoAluguel.dataAvaliacao != null}">Data da Avaliação</dt>
+                <dd class="col-sm-9" th:if="${pedidoAluguel.dataAvaliacao != null}" th:text="${#temporals.format(pedidoAluguel.dataAvaliacao, 'dd/MM/yyyy HH:mm')}"></dd>
+                
+                <dt class="col-sm-3" th:if="${pedidoAluguel.parecerFinanceiro != null}">Parecer Financeiro</dt>
+                <dd class="col-sm-9" th:if="${pedidoAluguel.parecerFinanceiro != null}" th:text="${pedidoAluguel.parecerFinanceiro}"></dd>
+                
+                <dt class="col-sm-3" th:if="${pedidoAluguel.observacoesAvaliacao != null}">Observações</dt>
+                <dd class="col-sm-9" th:if="${pedidoAluguel.observacoesAvaliacao != null}" th:text="${pedidoAluguel.observacoesAvaliacao}"></dd>
+            </dl>
+        </div>
+    </div>
+    
+    <div class="mt-3">
+        <a class="btn btn-secondary" th:href="@{/pedidos}">Voltar</a>
+        <a th:if="${pedidoAluguel.status.name() == 'PENDENTE'}" 
+           class="btn btn-primary" th:href="@{'/avaliacoes/' + ${pedidoAluguel.id}}">Avaliar</a>
+        <form th:if="${pedidoAluguel.status.name() == 'PENDENTE' or pedidoAluguel.status.name() == 'APROVADO'}" 
+              th:action="@{'/pedidos/' + ${pedidoAluguel.id} + '/cancelar'}" method="post" style="display:inline">
+            <button class="btn btn-danger" type="submit" onclick="return confirm('Cancelar pedido?')">Cancelar</button>
+        </form>
+        <form th:if="${pedidoAluguel.status.name() == 'APROVADO'}" 
+              th:action="@{'/pedidos/' + ${pedidoAluguel.id} + '/finalizar'}" method="post" style="display:inline">
+            <button class="btn btn-success" type="submit" onclick="return confirm('Finalizar pedido?')">Finalizar</button>
+        </form>
+    </div>
 </section>
 <th:block th:replace="fragments/layout :: common_scripts"></th:block>
 </body>

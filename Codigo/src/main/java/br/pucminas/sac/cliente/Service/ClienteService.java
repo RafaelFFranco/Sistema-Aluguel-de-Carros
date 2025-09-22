@@ -35,6 +35,14 @@ public class ClienteService {
     public void excluir(Long id) {
         repository.deleteById(id);
     }
+    
+    public boolean existePorCpf(String cpf) {
+        return repository.existsByCpf(cpf);
+    }
+    
+    public boolean existePorRg(String rg) {
+        return repository.existsByRg(rg);
+    }
 }
 
 
