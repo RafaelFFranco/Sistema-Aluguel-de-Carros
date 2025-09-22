@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Novo Pedido de Aluguel</title>
-    <th:block th:replace="fragments/layout :: common_head"></th:block>
+    <th:block th:replace="~{fragments/layout :: common_head}"></th:block>
     <meta charset="UTF-8" />
 </head>
 <body>
@@ -44,6 +44,6 @@
         </div>
     </form>
 </section>
-<th:block th:replace="fragments/layout :: common_scripts"></th:block>
+<th:block th:replace="~{fragments/layout :: common_scripts}"></th:block>
 </body>
 </html>

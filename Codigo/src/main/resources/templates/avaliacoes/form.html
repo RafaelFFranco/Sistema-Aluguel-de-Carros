@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Avaliação Financeira</title>
-    <th:block th:replace="fragments/layout :: common_head"></th:block>
+    <th:block th:replace="~{fragments/layout :: common_head}"></th:block>
 </head>
 <body>
 <nav style="margin-bottom: 20px;">
@@ -81,7 +81,7 @@
         </div>
     </form>
 </section>
-<th:block th:replace="fragments/layout :: common_scripts"></th:block>
+<th:block th:replace="~{fragments/layout :: common_scripts}"></th:block>
 </body>
 </html>
 

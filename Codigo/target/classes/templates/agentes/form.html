@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Agente</title>
-    <th:block th:replace="fragments/layout :: common_head"></th:block>
+    <th:block th:replace="~{fragments/layout :: common_head}"></th:block>
 </head>
 <body>
 <nav style="margin-bottom: 20px;">
@@ -18,7 +18,7 @@
     <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
     <div th:if="${erro}" class="alert alert-danger" th:text="${erro}"></div>
     
-    <form th:action="${agente.id != null ? @{|/agentes/${agente.id}|} : @{/agentes}}" th:object="${agente}" method="post" class="row g-3">
+    <form th:action="${agente.id != null ? '/agentes/' + agente.id : '/agentes'}" th:object="${agente}" method="post" class="row g-3">
         <div class="col-md-6">
             <label class="form-label">Nome</label>
             <input class="form-control" th:field="*{nome}" required />
@@ -71,7 +71,7 @@
         </div>
     </form>
 </section>
-<th:block th:replace="fragments/layout :: common_scripts"></th:block>
+<th:block th:replace="~{fragments/layout :: common_scripts}"></th:block>
 </body>
 </html>
 

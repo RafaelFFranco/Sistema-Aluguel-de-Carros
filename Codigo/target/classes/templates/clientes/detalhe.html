@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Detalhe do Cliente</title>
-    <th:block th:replace="fragments/layout :: common_head"></th:block>
+    <th:block th:replace="~{fragments/layout :: common_head}"></th:block>
     <meta charset="UTF-8" />
 </head>
 <body>
@@ -46,9 +46,9 @@
     <dd class="col-sm-10" th:if="${cliente.rendaTotal != null}" th:text="${#numbers.formatCurrency(cliente.rendaTotal)}"></dd>
 </dl>
 <a class="btn btn-secondary" th:href="@{/clientes}">Voltar</a>
-<a class="btn btn-primary" th:href="@{|/clientes/${cliente.id}/editar|}">Editar</a>
+<a class="btn btn-primary" th:href="@{'/clientes/' + ${cliente.id} + '/editar'}">Editar</a>
 </section>
-<th:block th:replace="fragments/layout :: common_scripts"></th:block>
+<th:block th:replace="~{fragments/layout :: common_scripts}"></th:block>
 </body>
 </html>
 

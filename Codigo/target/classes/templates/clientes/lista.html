@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Clientes</title>
-    <th:block th:replace="fragments/layout :: common_head"></th:block>
+    <th:block th:replace="~{fragments/layout :: common_head}"></th:block>
 </head>
 <body>
 <nav style="margin-bottom: 20px;">
@@ -32,13 +32,13 @@
         <tr th:each="c : ${clientes}">
             <td th:text="${c.id}"></td>
             <td>
-                <a th:href="@{|/clientes/${c.id}|}" th:text="${c.nomeCompleto}"></a>
+                <a th:href="@{'/clientes/' + ${c.id}}" th:text="${c.nomeCompleto}"></a>
             </td>
             <td th:text="${c.cpf}"></td>
             <td th:text="${c.email}"></td>
             <td>
-                <a class="btn btn-sm btn-secondary" th:href="@{|/clientes/${c.id}/editar|}">Editar</a>
-                <form th:action="@{|/clientes/${c.id}/excluir|}" method="post" style="display:inline">
+                <a class="btn btn-sm btn-secondary" th:href="@{'/clientes/' + ${c.id} + '/editar'}">Editar</a>
+                <form th:action="@{'/clientes/' + ${c.id} + '/excluir'}" method="post" style="display:inline">
                     <button class="btn btn-sm btn-danger" type="submit" onclick="return confirm('Excluir?')">Excluir</button>
                 </form>
             </td>
@@ -46,7 +46,7 @@
         </tbody>
     </table>
 </section>
-<th:block th:replace="fragments/layout :: common_scripts"></th:block>
+<th:block th:replace="~{fragments/layout :: common_scripts}"></th:block>
 </body>
 </html>
 
