@@ -2,26 +2,81 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
-    <title>Sistema</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="'Sistema de Aluguel de Carros - ' + (${pageTitle} ?: 'Home')">Sistema de Aluguel de Carros</title>
     <th:block th:fragment="common_head">
         <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" />
+        <link rel="stylesheet" th:href="@{/css/main.css}" />
+        <link rel="stylesheet" th:href="@{/css/components.css}" />
+        <link rel="stylesheet" th:href="@{/css/interactive.css}" />
+        <link rel="stylesheet" th:href="@{/css/animations.css}" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚗</text></svg>">
     </th:block>
     <th:block th:replace="~{this :: common_head}"></th:block>
     
     <th:block th:fragment="common_scripts">
         <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/js/main.js}"></script>
     </th:block>
 </head>
 <body>
-<main class="container py-4">
-    <th:block th:fragment="content"></th:block>
+<!-- Navbar Principal -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            🚗 Sistema de Aluguel de Carros
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/clientes}">👥 Clientes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/pedidos}">📋 Pedidos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/automoveis}">🚙 Automóveis</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/agentes}">👔 Agentes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/avaliacoes}">⭐ Avaliações</a>
+                </li>
+            </ul>
+            <a class="btn btn-novo-pedido" th:href="@{/pedidos/novo}">+ Novo Pedido</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-4">
+    <main class="main-container fade-in-up">
+        <th:block th:fragment="content"></th:block>
+    </main>
+    
     <th:block th:replace="~{this :: common_scripts}"></th:block>
     
-    <footer class="text-center text-muted small mt-5">
-        <hr/>
-        <div>PUC Minas - Sistema de Aluguel de Carros</div>
+    <footer class="footer-custom">
+        <div class="container">
+            <hr/>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>🎓 PUC Minas</h5>
+                    <p class="mb-0">Sistema de Aluguel de Carros</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <small>© 2025 - Todos os direitos reservados</small>
+                </div>
+            </div>
+        </div>
     </footer>
-</main>
+</div>
 </body>
 </html>
 

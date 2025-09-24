@@ -1,52 +1,185 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Clientes</title>
+    <title>Clientes - Sistema de Aluguel de Carros</title>
     <th:block th:replace="~{fragments/layout :: common_head}"></th:block>
 </head>
 <body>
-<nav style="margin-bottom: 20px;">
-    <a class="btn btn-primary" th:href="@{/clientes}">Clientes</a>
-    <a class="btn btn-primary" th:href="@{/pedidos}">Pedidos</a>
-    <a class="btn btn-primary" th:href="@{/automoveis}">Automóveis</a>
-    <a class="btn btn-primary" th:href="@{/agentes}">Agentes</a>
-    <a class="btn btn-primary" th:href="@{/avaliacoes}">Avaliações</a>
-    <a class="btn btn-success" th:href="@{/pedidos/novo}">Novo Pedido</a>
+<!-- Navbar Principal -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            🚗 Sistema de Aluguel de Carros
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/clientes}">👥 Clientes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/pedidos}">📋 Pedidos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/automoveis}">🚙 Automóveis</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/agentes}">👔 Agentes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/avaliacoes}">⭐ Avaliações</a>
+                </li>
+            </ul>
+            <a class="btn btn-novo-pedido" th:href="@{/pedidos/novo}">+ Novo Pedido</a>
+        </div>
+    </div>
 </nav>
-<section class="container py-4">
-    <h1>Clientes</h1>
-    <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
-    <div th:if="${erro}" class="alert alert-danger" th:text="${erro}"></div>
-    <a class="btn btn-primary mb-3" th:href="@{/clientes/novo}">Novo Cliente</a>
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nome</th>
-            <th>CPF</th>
-            <th>Email</th>
-            <th>Ações</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="c : ${clientes}">
-            <td th:text="${c.id}"></td>
-            <td>
-                <a th:href="@{'/clientes/' + ${c.id}}" th:text="${c.nomeCompleto}"></a>
-            </td>
-            <td th:text="${c.cpf}"></td>
-            <td th:text="${c.email}"></td>
-            <td>
-                <a class="btn btn-sm btn-secondary" th:href="@{'/clientes/' + ${c.id} + '/editar'}">Editar</a>
-                <form th:action="@{'/clientes/' + ${c.id} + '/excluir'}" method="post" style="display:inline">
-                    <button class="btn btn-sm btn-danger" type="submit" onclick="return confirm('Excluir?')">Excluir</button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</section>
-<th:block th:replace="~{fragments/layout :: common_scripts}"></th:block>
+
+<div class="container py-4">
+    <main class="main-container fade-in-up">
+        <!-- Cabeçalho da Página -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="page-title">👥 Gerenciamento de Clientes</h1>
+            <div class="action-buttons">
+                <a class="btn btn-primary pulse" th:href="@{/clientes/novo}">
+                    ➕ Novo Cliente
+                </a>
+            </div>
+        </div>
+
+        <!-- Alertas -->
+        <div th:if="${msg}" class="alert alert-success fade-in-up" th:text="${msg}"></div>
+        <div th:if="${erro}" class="alert alert-danger fade-in-up" th:text="${erro}"></div>
+
+        <!-- Área de Busca e Filtros -->
+        <div class="search-container">
+            <div class="row">
+                <div class="col-md-8">
+                    <input type="text" class="search-input" placeholder="🔍 Buscar clientes por nome, CPF ou email..." id="searchInput">
+                </div>
+                <div class="col-md-4">
+                    <div class="filter-group">
+                        <label class="filter-label">Ordenar por:</label>
+                        <select class="form-control" id="sortSelect">
+                            <option value="nome">Nome</option>
+                            <option value="cpf">CPF</option>
+                            <option value="email">Email</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela de Clientes -->
+        <div class="table-container">
+            <table class="table table-striped" id="clientesTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>👤 Nome</th>
+                        <th>📄 CPF</th>
+                        <th>📧 Email</th>
+                        <th class="text-center">⚙️ Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="c : ${clientes}" class="fade-in-up">
+                        <td>
+                            <span class="badge badge-primary">#<span th:text="${c.id}"></span></span>
+                        </td>
+                        <td>
+                            <a th:href="@{'/clientes/' + ${c.id}}" th:text="${c.nomeCompleto}" class="fw-bold"></a>
+                        </td>
+                        <td>
+                            <code th:text="${c.cpf}"></code>
+                        </td>
+                        <td>
+                            <span th:text="${c.email}"></span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a class="btn-action btn-view" th:href="@{'/clientes/' + ${c.id}}" title="Ver Detalhes">
+                                    👁️ Ver
+                                </a>
+                                <a class="btn-action btn-edit" th:href="@{'/clientes/' + ${c.id} + '/editar'}" title="Editar Cliente">
+                                    ✏️ Editar
+                                </a>
+                                <form th:action="@{'/clientes/' + ${c.id} + '/excluir'}" method="post" style="display:inline" onsubmit="return confirm('⚠️ Tem certeza que deseja excluir este cliente?')">
+                                    <button class="btn-action btn-delete" type="submit" title="Excluir Cliente">
+                                        🗑️ Excluir
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Informações da Tabela -->
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <small class="text-muted">
+                Total de clientes: <strong><span th:text="${#lists.size(clientes)}"></span></strong>
+            </small>
+            <small class="text-muted">
+                📊 Última atualização: <span id="currentTime"></span>
+            </small>
+        </div>
+    </main>
+    
+    <th:block th:replace="~{fragments/layout :: common_scripts}"></th:block>
+    
+    <!-- Script para funcionalidades interativas -->
+    <script>
+        // Busca em tempo real
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const tableRows = document.querySelectorAll('#clientesTable tbody tr');
+            
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Atualizar horário atual
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleString('pt-BR');
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // Animação de entrada para linhas da tabela
+        document.addEventListener('DOMContentLoaded', function() {
+            const rows = document.querySelectorAll('#clientesTable tbody tr');
+            rows.forEach((row, index) => {
+                row.style.animationDelay = (index * 0.1) + 's';
+            });
+        });
+    </script>
+    
+    <footer class="footer-custom">
+        <div class="container">
+            <hr/>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>🎓 PUC Minas</h5>
+                    <p class="mb-0">Sistema de Aluguel de Carros</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <small>© 2025 - Todos os direitos reservados</small>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
 </body>
 </html>
 

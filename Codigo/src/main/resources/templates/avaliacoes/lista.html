@@ -1,57 +1,264 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Avaliações Financeiras</title>
+    <title>Avaliações Financeiras - Sistema de Aluguel de Carros</title>
     <th:block th:replace="~{fragments/layout :: common_head}"></th:block>
 </head>
 <body>
-<nav style="margin-bottom: 20px;">
-    <a class="btn btn-primary" th:href="@{/clientes}">Clientes</a>
-    <a class="btn btn-primary" th:href="@{/pedidos}">Pedidos</a>
-    <a class="btn btn-primary" th:href="@{/automoveis}">Automóveis</a>
-    <a class="btn btn-primary" th:href="@{/agentes}">Agentes</a>
-    <a class="btn btn-primary" th:href="@{/avaliacoes}">Avaliações</a>
-    <a class="btn btn-success" th:href="@{/pedidos/novo}">Novo Pedido</a>
+<!-- Navbar Principal -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            🚗 Sistema de Aluguel de Carros
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/clientes}">👥 Clientes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/pedidos}">📋 Pedidos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/automoveis}">🚙 Automóveis</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/agentes}">👔 Agentes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/avaliacoes}">⭐ Avaliações</a>
+                </li>
+            </ul>
+            <a class="btn btn-novo-pedido" th:href="@{/pedidos/novo}">+ Novo Pedido</a>
+        </div>
+    </div>
 </nav>
-<section class="container py-4">
-    <h1>Pedidos Pendentes de Avaliação</h1>
-    <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
-    <div th:if="${erro}" class="alert alert-danger" th:text="${erro}"></div>
+
+<div class="container py-4">
+    <main class="main-container fade-in-up">
+        <!-- Cabeçalho da Página -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="page-title">⭐ Avaliações Financeiras</h1>
+            <div class="action-buttons">
+                <span class="badge badge-custom bg-warning">
+                    <span th:text="${#lists.size(pedidos)}"></span> Pendente(s)
+                </span>
+            </div>
+        </div>
+
+        <!-- Alertas -->
+        <div th:if="${msg}" class="alert alert-success fade-in-up" th:text="${msg}"></div>
+        <div th:if="${erro}" class="alert alert-danger fade-in-up" th:text="${erro}"></div>
+
+        <!-- Área de Busca -->
+        <div class="search-container">
+            <div class="row">
+                <div class="col-md-8">
+                    <input type="text" class="search-input" placeholder="🔍 Buscar pedidos por cliente ou automóvel..." id="searchInput">
+                </div>
+                <div class="col-md-4">
+                    <div class="filter-group">
+                        <label class="filter-label">Filtrar por Score:</label>
+                        <select class="form-control" id="scoreFilter">
+                            <option value="">Todos os Scores</option>
+                            <option value="alto">Alto (≥ 7)</option>
+                            <option value="medio">Médio (5-6)</option>
+                            <option value="baixo">Baixo (< 5)</option>
+                            <option value="nao-calculado">Não Calculado</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estatísticas Rápidas -->
+        <div class="stats-grid">
+            <div class="stats-card">
+                <div class="stats-number text-warning" id="totalPendentes">0</div>
+                <div class="stats-label">Pendentes de Avaliação</div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-number text-success" id="scoreAlto">0</div>
+                <div class="stats-label">Score Alto (≥ 7)</div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-number text-warning" id="scoreMedio">0</div>
+                <div class="stats-label">Score Médio (5-6)</div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-number text-danger" id="scoreBaixo">0</div>
+                <div class="stats-label">Score Baixo (< 5)</div>
+            </div>
+        </div>
+
+        <!-- Tabela de Avaliações -->
+        <div class="table-container">
+            <table class="table table-striped" id="avaliacoesTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>👤 Cliente</th>
+                        <th>🚗 Automóvel</th>
+                        <th>📅 Data do Pedido</th>
+                        <th class="text-center">💯 Score Financeiro</th>
+                        <th class="text-center">⚙️ Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="pedido : ${pedidos}" class="fade-in-up" th:attr="data-score=${pedido.scoreFinanceiro}">
+                        <td>
+                            <span class="badge badge-primary">#<span th:text="${pedido.id}"></span></span>
+                        </td>
+                        <td>
+                            <strong th:text="${pedido.cliente.nomeCompleto}"></strong>
+                        </td>
+                        <td>
+                            <span th:if="${pedido.automovel != null}" th:text="${pedido.automovel.marca + ' ' + pedido.automovel.modelo}" class="fw-bold"></span>
+                            <span th:if="${pedido.carro != null and pedido.automovel == null}" th:text="${pedido.carro}" class="fw-bold"></span>
+                        </td>
+                        <td>
+                            <span th:text="${#temporals.format(pedido.dataPedido, 'dd/MM/yyyy HH:mm')}"></span>
+                        </td>
+                        <td class="text-center">
+                            <span class="status-badge"
+                                  th:classappend="${pedido.scoreFinanceiro != null and pedido.scoreFinanceiro >= 7} ? 'status-ativo' : 
+                                                (${pedido.scoreFinanceiro != null and pedido.scoreFinanceiro >= 5} ? 'status-pendente' : 
+                                                (${pedido.scoreFinanceiro != null} ? 'status-cancelado' : 'status-manutencao'))"
+                                  th:text="${pedido.scoreFinanceiro != null ? pedido.scoreFinanceiro + '/10' : 'Não calculado'}">
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <div class="action-buttons">
+                                <a class="btn-action btn-edit pulse" th:href="@{'/avaliacoes/' + ${pedido.id}}" title="Avaliar Pedido">
+                                    ⭐ Avaliar
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Informações da Tabela -->
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <small class="text-muted">
+                Total de pedidos pendentes: <strong><span id="totalCount" th:text="${#lists.size(pedidos)}"></span></strong>
+            </small>
+            <small class="text-muted">
+                📊 Última atualização: <span id="currentTime"></span>
+            </small>
+        </div>
+
+        <!-- Informação adicional -->
+        <div class="alert alert-info mt-4" th:if="${#lists.isEmpty(pedidos)}">
+            <h5>🎉 Excelente!</h5>
+            <p class="mb-0">Não há pedidos pendentes de avaliação financeira no momento.</p>
+        </div>
+    </main>
     
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID Pedido</th>
-                <th>Cliente</th>
-                <th>Automóvel</th>
-                <th>Data do Pedido</th>
-                <th>Score Calculado</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="pedido : ${pedidos}">
-                <td th:text="${pedido.id}"></td>
-                <td th:text="${pedido.cliente.nomeCompleto}"></td>
-                <td>
-                    <span th:if="${pedido.automovel != null}" th:text="${pedido.automovel.marca + ' ' + pedido.automovel.modelo}"></span>
-                    <span th:if="${pedido.carro != null and pedido.automovel == null}" th:text="${pedido.carro}"></span>
-                </td>
-                <td th:text="${#temporals.format(pedido.dataPedido, 'dd/MM/yyyy HH:mm')}"></td>
-                <td>
-                    <span class="badge" 
-                          th:classappend="${pedido.scoreFinanceiro != null and pedido.scoreFinanceiro >= 7} ? 'bg-success' : 
-                                        (${pedido.scoreFinanceiro != null and pedido.scoreFinanceiro >= 5} ? 'bg-warning' : 'bg-danger')"
-                          th:text="${pedido.scoreFinanceiro != null ? pedido.scoreFinanceiro : 'Não calculado'}"></span>
-                </td>
-                <td>
-                    <a class="btn btn-sm btn-primary" th:href="@{'/avaliacoes/' + ${pedido.id}}">Avaliar</a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</section>
-<th:block th:replace="~{fragments/layout :: common_scripts}"></th:block>
+    <th:block th:replace="~{fragments/layout :: common_scripts}"></th:block>
+    
+    <!-- Script para funcionalidades interativas -->
+    <script>
+        // Busca em tempo real
+        document.getElementById('searchInput').addEventListener('input', function() {
+            filterTable();
+        });
+
+        // Filtro por score
+        document.getElementById('scoreFilter').addEventListener('change', function() {
+            filterTable();
+        });
+
+        function filterTable() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const scoreFilter = document.getElementById('scoreFilter').value;
+            const tableRows = document.querySelectorAll('#avaliacoesTable tbody tr');
+            let visibleCount = 0;
+            
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const score = parseFloat(row.getAttribute('data-score'));
+                const matchesSearch = text.includes(searchTerm);
+                
+                let matchesScore = true;
+                if (scoreFilter === 'alto' && (isNaN(score) || score < 7)) matchesScore = false;
+                if (scoreFilter === 'medio' && (isNaN(score) || score < 5 || score >= 7)) matchesScore = false;
+                if (scoreFilter === 'baixo' && (isNaN(score) || score >= 5)) matchesScore = false;
+                if (scoreFilter === 'nao-calculado' && !isNaN(score)) matchesScore = false;
+                
+                if (matchesSearch && matchesScore) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            document.getElementById('totalCount').textContent = visibleCount;
+        }
+
+        // Calcular estatísticas
+        function updateStats() {
+            const rows = document.querySelectorAll('#avaliacoesTable tbody tr');
+            let total = rows.length;
+            let scoreAlto = 0;
+            let scoreMedio = 0;
+            let scoreBaixo = 0;
+            
+            rows.forEach(row => {
+                const score = parseFloat(row.getAttribute('data-score'));
+                if (!isNaN(score)) {
+                    if (score >= 7) scoreAlto++;
+                    else if (score >= 5) scoreMedio++;
+                    else scoreBaixo++;
+                }
+            });
+            
+            document.getElementById('totalPendentes').textContent = total;
+            document.getElementById('scoreAlto').textContent = scoreAlto;
+            document.getElementById('scoreMedio').textContent = scoreMedio;
+            document.getElementById('scoreBaixo').textContent = scoreBaixo;
+        }
+
+        // Atualizar horário atual
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleString('pt-BR');
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            updateTime();
+            setInterval(updateTime, 1000);
+            
+            // Animação de entrada para linhas da tabela
+            const rows = document.querySelectorAll('#avaliacoesTable tbody tr');
+            rows.forEach((row, index) => {
+                row.style.animationDelay = (index * 0.1) + 's';
+            });
+        });
+    </script>
+    
+    <footer class="footer-custom">
+        <div class="container">
+            <hr/>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>🎓 PUC Minas</h5>
+                    <p class="mb-0">Sistema de Aluguel de Carros</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+            
+                    <small>© 2025 - Todos os direitos reservados</small>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
 </body>
-</html>
 

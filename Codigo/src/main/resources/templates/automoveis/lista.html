@@ -1,70 +1,286 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Automóveis</title>
+    <title>Automóveis - Sistema de Aluguel de Carros</title>
     <th:block th:replace="~{fragments/layout :: common_head}"></th:block>
 </head>
 <body>
-<nav style="margin-bottom: 20px;">
-    <a class="btn btn-primary" th:href="@{/clientes}">Clientes</a>
-    <a class="btn btn-primary" th:href="@{/pedidos}">Pedidos</a>
-    <a class="btn btn-primary" th:href="@{/automoveis}">Automóveis</a>
-    <a class="btn btn-primary" th:href="@{/agentes}">Agentes</a>
-    <a class="btn btn-primary" th:href="@{/avaliacoes}">Avaliações</a>
-    <a class="btn btn-success" th:href="@{/pedidos/novo}">Novo Pedido</a>
-</nav>
-<section class="container py-4">
-    <h1>Automóveis</h1>
-    <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
-    <div th:if="${erro}" class="alert alert-danger" th:text="${erro}"></div>
-    
-    <div class="mb-3">
-        <a class="btn btn-primary" th:href="@{/automoveis/novo}">Novo Automóvel</a>
-        <a class="btn btn-outline-success" th:href="@{/automoveis/disponiveis}">Ver Disponíveis</a>
+<!-- Navbar Principal -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            🚗 Sistema de Aluguel de Carros
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/clientes}">👥 Clientes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/pedidos}">📋 Pedidos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/automoveis}">🚙 Automóveis</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/agentes}">👔 Agentes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/avaliacoes}">⭐ Avaliações</a>
+                </li>
+            </ul>
+            <a class="btn btn-novo-pedido" th:href="@{/pedidos/novo}">+ Novo Pedido</a>
+        </div>
     </div>
+</nav>
+
+<div class="container py-4">
+    <main class="main-container fade-in-up">
+        <!-- Cabeçalho da Página -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="page-title">🚙 Gerenciamento de Automóveis</h1>
+            <div class="action-buttons">
+                <a class="btn btn-outline-success" th:href="@{/automoveis/disponiveis}">
+                    ✅ Ver Disponíveis
+                </a>
+                <a class="btn btn-primary pulse" th:href="@{/automoveis/novo}">
+                    ➕ Novo Automóvel
+                </a>
+            </div>
+        </div>
+
+        <!-- Alertas -->
+        <div th:if="${msg}" class="alert alert-success fade-in-up" th:text="${msg}"></div>
+        <div th:if="${erro}" class="alert alert-danger fade-in-up" th:text="${erro}"></div>
+
+        <!-- Área de Busca e Filtros -->
+        <div class="search-container">
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="text" class="search-input" placeholder="🔍 Buscar por marca, modelo ou placa..." id="searchInput">
+                </div>
+                <div class="col-md-3">
+                    <select class="form-control" id="statusFilter">
+                        <option value="">Todos os Status</option>
+                        <option value="DISPONIVEL">Disponível</option>
+                        <option value="ALUGADO">Alugado</option>
+                        <option value="MANUTENCAO">Manutenção</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-control" id="sortSelect">
+                        <option value="marca">Ordenar por Marca</option>
+                        <option value="modelo">Modelo</option>
+                        <option value="ano">Ano</option>
+                        <option value="status">Status</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estatísticas Rápidas -->
+        <div class="stats-grid">
+            <div class="stats-card">
+                <div class="stats-number" id="totalVeiculos">0</div>
+                <div class="stats-label">Total de Veículos</div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-number text-success" id="disponiveis">0</div>
+                <div class="stats-label">Disponíveis</div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-number text-warning" id="alugados">0</div>
+                <div class="stats-label">Alugados</div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-number text-info" id="manutencao">0</div>
+                <div class="stats-label">Em Manutenção</div>
+            </div>
+        </div>
+
+        <!-- Tabela de Automóveis -->
+        <div class="table-container">
+            <table class="table table-striped" id="automoveisTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>🏷️ Marca</th>
+                        <th>🚗 Modelo</th>
+                        <th>📅 Ano</th>
+                        <th>🆔 Placa</th>
+                        <th>📋 Matrícula</th>
+                        <th class="text-center">📊 Status</th>
+                        <th>🏢 Propriedade</th>
+                        <th class="text-center">⚙️ Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="automovel : ${automoveis}" class="fade-in-up" th:attr="data-status=${automovel.status.name()}">
+                        <td>
+                            <span class="badge badge-primary">#<span th:text="${automovel.id}"></span></span>
+                        </td>
+                        <td>
+                            <strong th:text="${automovel.marca}"></strong>
+                        </td>
+                        <td>
+                            <a th:href="@{'/automoveis/' + ${automovel.id}}" th:text="${automovel.modelo}" class="fw-bold"></a>
+                        </td>
+                        <td>
+                            <span th:text="${automovel.ano}"></span>
+                        </td>
+                        <td>
+                            <code th:text="${automovel.placa}"></code>
+                        </td>
+                        <td>
+                            <span th:text="${automovel.matricula}"></span>
+                        </td>
+                        <td class="text-center">
+                            <span class="status-badge"
+                                  th:classappend="${automovel.status.name() == 'DISPONIVEL'} ? 'status-disponivel' : 
+                                                (${automovel.status.name() == 'ALUGADO'} ? 'status-alugado' : 
+                                                (${automovel.status.name() == 'MANUTENCAO'} ? 'status-manutencao' : 'status-ativo'))"
+                                  th:text="${automovel.status}">
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge badge-custom" th:text="${automovel.tipoPropriedade}"></span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a class="btn-action btn-view" th:href="@{'/automoveis/' + ${automovel.id}}" title="Ver Detalhes">
+                                    👁️ Ver
+                                </a>
+                                <a class="btn-action btn-edit" th:href="@{'/automoveis/' + ${automovel.id} + '/editar'}" title="Editar Automóvel">
+                                    ✏️ Editar
+                                </a>
+                                <form th:action="@{'/automoveis/' + ${automovel.id} + '/excluir'}" method="post" style="display:inline" onsubmit="return confirm('⚠️ Tem certeza que deseja excluir este automóvel?')">
+                                    <button class="btn-action btn-delete" type="submit" title="Excluir Automóvel">
+                                        🗑️ Excluir
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Informações da Tabela -->
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <small class="text-muted">
+                Total de automóveis: <strong><span id="totalCount" th:text="${#lists.size(automoveis)}"></span></strong>
+            </small>
+            <small class="text-muted">
+                📊 Última atualização: <span id="currentTime"></span>
+            </small>
+        </div>
+    </main>
     
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Marca</th>
-                <th>Modelo</th>
-                <th>Ano</th>
-                <th>Placa</th>
-                <th>Matrícula</th>
-                <th>Status</th>
-                <th>Propriedade</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="automovel : ${automoveis}">
-                <td th:text="${automovel.id}"></td>
-                <td th:text="${automovel.marca}"></td>
-                <td th:text="${automovel.modelo}"></td>
-                <td th:text="${automovel.ano}"></td>
-                <td th:text="${automovel.placa}"></td>
-                <td th:text="${automovel.matricula}"></td>
-                <td>
-                    <span class="badge" 
-                          th:classappend="${automovel.status.name() == 'DISPONIVEL'} ? 'bg-success' : 
-                                        (${automovel.status.name() == 'ALUGADO'} ? 'bg-warning' : 
-                                        (${automovel.status.name() == 'MANUTENCAO'} ? 'bg-info' : 'bg-secondary'))"
-                          th:text="${automovel.status}"></span>
-                </td>
-                <td th:text="${automovel.tipoPropriedade}"></td>
-                <td>
-                    <a class="btn btn-sm btn-info" th:href="@{'/automoveis/' + ${automovel.id}}">Ver</a>
-                    <a class="btn btn-sm btn-secondary" th:href="@{'/automoveis/' + ${automovel.id} + '/editar'}">Editar</a>
-                    <form th:action="@{'/automoveis/' + ${automovel.id} + '/excluir'}" method="post" style="display:inline">
-                        <button class="btn btn-sm btn-danger" type="submit" onclick="return confirm('Excluir?')">Excluir</button>
-                    </form>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</section>
-<th:block th:replace="~{fragments/layout :: common_scripts}"></th:block>
+    <th:block th:replace="~{fragments/layout :: common_scripts}"></th:block>
+    
+    <!-- Script para funcionalidades interativas -->
+    <script>
+        // Busca em tempo real
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            filterTable();
+        });
+
+        // Filtro por status
+        document.getElementById('statusFilter').addEventListener('change', function() {
+            filterTable();
+        });
+
+        function filterTable() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const tableRows = document.querySelectorAll('#automoveisTable tbody tr');
+            let visibleCount = 0;
+            
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const status = row.getAttribute('data-status');
+                const matchesSearch = text.includes(searchTerm);
+                const matchesStatus = !statusFilter || status === statusFilter;
+                
+                if (matchesSearch && matchesStatus) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            document.getElementById('totalCount').textContent = visibleCount;
+        }
+
+        // Calcular estatísticas
+        function updateStats() {
+            const rows = document.querySelectorAll('#automoveisTable tbody tr');
+            let total = rows.length;
+            let disponivel = 0;
+            let alugado = 0;
+            let manutencao = 0;
+            
+            rows.forEach(row => {
+                const status = row.getAttribute('data-status');
+                switch(status) {
+                    case 'DISPONIVEL':
+                        disponivel++;
+                        break;
+                    case 'ALUGADO':
+                        alugado++;
+                        break;
+                    case 'MANUTENCAO':
+                        manutencao++;
+                        break;
+                }
+            });
+            
+            document.getElementById('totalVeiculos').textContent = total;
+            document.getElementById('disponiveis').textContent = disponivel;
+            document.getElementById('alugados').textContent = alugado;
+            document.getElementById('manutencao').textContent = manutencao;
+        }
+
+        // Atualizar horário atual
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleString('pt-BR');
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            updateTime();
+            setInterval(updateTime, 1000);
+            
+            // Animação de entrada para linhas da tabela
+            const rows = document.querySelectorAll('#automoveisTable tbody tr');
+            rows.forEach((row, index) => {
+                row.style.animationDelay = (index * 0.1) + 's';
+            });
+        });
+    </script>
+    
+    <footer class="footer-custom">
+        <div class="container">
+            <hr/>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>🎓 PUC Minas</h5>
+                    <p class="mb-0">Sistema de Aluguel de Carros</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    
+                    <small>© 2025 - Todos os direitos reservados</small>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
 </body>
-</html>
 

@@ -1,79 +1,280 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Pedidos de Aluguel</title>
+    <title>Pedidos de Aluguel - Sistema de Aluguel de Carros</title>
     <th:block th:replace="~{fragments/layout :: common_head}"></th:block>
 </head>
 <body>
-<nav style="margin-bottom: 20px;">
-    <a class="btn btn-primary" th:href="@{/clientes}">Clientes</a>
-    <a class="btn btn-primary" th:href="@{/pedidos}">Pedidos</a>
-    <a class="btn btn-primary" th:href="@{/automoveis}">Automóveis</a>
-    <a class="btn btn-primary" th:href="@{/agentes}">Agentes</a>
-    <a class="btn btn-primary" th:href="@{/avaliacoes}">Avaliações</a>
-    <a class="btn btn-success" th:href="@{/pedidos/novo}">Novo Pedido</a>
-</nav>
-<section class="container py-4">
-    <h1>Pedidos de Aluguel</h1>
-    <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
-    <div th:if="${erro}" class="alert alert-danger" th:text="${erro}"></div>
-    
-    <div class="mb-3">
-        <a class="btn btn-outline-primary" th:href="@{/pedidos}">Todos</a>
-        <a class="btn btn-outline-warning" th:href="@{/pedidos/pendentes}">Pendentes</a>
-        <a class="btn btn-outline-success" th:href="@{/pedidos/aprovados}">Aprovados</a>
+<!-- Navbar Principal -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            🚗 Sistema de Aluguel de Carros
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/clientes}">👥 Clientes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/pedidos}">📋 Pedidos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/automoveis}">🚙 Automóveis</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/agentes}">👔 Agentes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/avaliacoes}">⭐ Avaliações</a>
+                </li>
+            </ul>
+            <a class="btn btn-novo-pedido" th:href="@{/pedidos/novo}">+ Novo Pedido</a>
+        </div>
     </div>
+</nav>
+
+<div class="container py-4">
+    <main class="main-container fade-in-up">
+        <!-- Cabeçalho da Página -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="page-title">📋 Gerenciamento de Pedidos</h1>
+            <div class="action-buttons">
+                <a class="btn btn-primary pulse" th:href="@{/pedidos/novo}">
+                    ➕ Novo Pedido
+                </a>
+            </div>
+        </div>
+
+        <!-- Alertas -->
+        <div th:if="${msg}" class="alert alert-success fade-in-up" th:text="${msg}"></div>
+        <div th:if="${erro}" class="alert alert-danger fade-in-up" th:text="${erro}"></div>
+
+        <!-- Filtros de Status -->
+        <div class="search-container">
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="text" class="search-input" placeholder="🔍 Buscar pedidos por cliente ou automóvel..." id="searchInput">
+                </div>
+                <div class="col-md-6">
+                    <div class="filter-group">
+                        <a class="btn btn-outline-primary" th:href="@{/pedidos}" id="filtroTodos">
+                            📊 Todos
+                        </a>
+                        <a class="btn btn-outline-warning" th:href="@{/pedidos/pendentes}" id="filtroPendentes">
+                            ⏳ Pendentes
+                        </a>
+                        <a class="btn btn-outline-success" th:href="@{/pedidos/aprovados}" id="filtroAprovados">
+                            ✅ Aprovados
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estatísticas Rápidas -->
+        <div class="stats-grid">
+            <div class="stats-card">
+                <div class="stats-number" id="totalPedidos">0</div>
+                <div class="stats-label">Total de Pedidos</div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-number text-warning" id="pendentes">0</div>
+                <div class="stats-label">Pendentes</div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-number text-success" id="aprovados">0</div>
+                <div class="stats-label">Aprovados</div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-number text-danger" id="recusados">0</div>
+                <div class="stats-label">Recusados</div>
+            </div>
+        </div>
+
+        <!-- Tabela de Pedidos -->
+        <div class="table-container">
+            <table class="table table-striped" id="pedidosTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>👤 Cliente</th>
+                        <th>🚗 Automóvel</th>
+                        <th>📅 Data do Pedido</th>
+                        <th class="text-center">📊 Status</th>
+                        <th class="text-center">💯 Score</th>
+                        <th>👨‍💼 Avaliador</th>
+                        <th class="text-center">⚙️ Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="pedido : ${pedidos}" class="fade-in-up" th:attr="data-status=${pedido.status.name()}">
+                        <td>
+                            <span class="badge badge-primary">#<span th:text="${pedido.id}"></span></span>
+                        </td>
+                        <td>
+                            <strong th:text="${pedido.cliente != null ? pedido.cliente.nomeCompleto : 'Cliente não encontrado'}"></strong>
+                        </td>
+                        <td>
+                            <span th:if="${pedido.automovel != null}" th:text="${pedido.automovel.marca + ' ' + pedido.automovel.modelo}" class="fw-bold"></span>
+                            <span th:if="${pedido.carro != null and pedido.automovel == null}" th:text="${pedido.carro}" class="fw-bold"></span>
+                        </td>
+                        <td>
+                            <span th:text="${#temporals.format(pedido.dataPedido, 'dd/MM/yyyy HH:mm')}"></span>
+                        </td>
+                        <td class="text-center">
+                            <span class="status-badge"
+                                  th:classappend="${pedido.status.name() == 'PENDENTE'} ? 'status-pendente' : 
+                                                (${pedido.status.name() == 'APROVADO'} ? 'status-ativo' : 
+                                                (${pedido.status.name() == 'RECUSADO'} ? 'status-cancelado' : 'status-ativo'))"
+                                  th:text="${pedido.status}">
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <span th:if="${pedido.scoreFinanceiro != null}" 
+                                  class="badge badge-success" 
+                                  th:text="${pedido.scoreFinanceiro}">
+                            </span>
+                            <span th:if="${pedido.scoreFinanceiro == null}" class="text-muted">-</span>
+                        </td>
+                        <td>
+                            <span th:text="${pedido.agenteAvaliador != null ? pedido.agenteAvaliador.nome : '-'}"></span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a class="btn-action btn-view" th:href="@{'/pedidos/status/' + ${pedido.id}}" title="Ver Status">
+                                    👁️ Ver
+                                </a>
+                                <a th:if="${pedido.status.name() == 'PENDENTE'}" 
+                                   class="btn-action btn-edit" 
+                                   th:href="@{'/avaliacoes/' + ${pedido.id}}" 
+                                   title="Avaliar Pedido">
+                                    ⭐ Avaliar
+                                </a>
+                                <form th:if="${pedido.status.name() == 'PENDENTE' or pedido.status.name() == 'APROVADO'}" 
+                                      th:action="@{'/pedidos/' + ${pedido.id} + '/cancelar'}" 
+                                      method="post" 
+                                      style="display:inline" 
+                                      onsubmit="return confirm('⚠️ Tem certeza que deseja cancelar este pedido?')">
+                                    <button class="btn-action btn-delete" type="submit" title="Cancelar Pedido">
+                                        ❌ Cancelar
+                                    </button>
+                                </form>
+                                <form th:if="${pedido.status.name() == 'APROVADO'}" 
+                                      th:action="@{'/pedidos/' + ${pedido.id} + '/finalizar'}" 
+                                      method="post" 
+                                      style="display:inline" 
+                                      onsubmit="return confirm('✅ Tem certeza que deseja finalizar este pedido?')">
+                                    <button class="btn-action btn-view" type="submit" title="Finalizar Pedido">
+                                        ✅ Finalizar
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Informações da Tabela -->
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <small class="text-muted">
+                Total de pedidos: <strong><span id="totalCount" th:text="${#lists.size(pedidos)}"></span></strong>
+            </small>
+            <small class="text-muted">
+                📊 Última atualização: <span id="currentTime"></span>
+            </small>
+        </div>
+    </main>
     
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Cliente</th>
-                <th>Automóvel</th>
-                <th>Data do Pedido</th>
-                <th>Status</th>
-                <th>Score</th>
-                <th>Avaliador</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="pedido : ${pedidos}">
-                <td th:text="${pedido.id}"></td>
-                <td th:text="${pedido.cliente != null ? pedido.cliente.nomeCompleto : 'Cliente não encontrado'}"></td>
-                <td>
-                    <span th:if="${pedido.automovel != null}" th:text="${pedido.automovel.marca + ' ' + pedido.automovel.modelo}"></span>
-                    <span th:if="${pedido.carro != null and pedido.automovel == null}" th:text="${pedido.carro}"></span>
-                </td>
-                <td th:text="${#temporals.format(pedido.dataPedido, 'dd/MM/yyyy HH:mm')}"></td>
-                <td>
-                    <span class="badge" 
-                          th:classappend="${pedido.status.name() == 'PENDENTE'} ? 'bg-warning' : 
-                                        (${pedido.status.name() == 'APROVADO'} ? 'bg-success' : 
-                                        (${pedido.status.name() == 'RECUSADO'} ? 'bg-danger' : 'bg-info'))"
-                          th:text="${pedido.status}"></span>
-                </td>
-                <td>
-                    <span th:if="${pedido.scoreFinanceiro != null}" th:text="${pedido.scoreFinanceiro}"></span>
-                    <span th:if="${pedido.scoreFinanceiro == null}">-</span>
-                </td>
-                <td th:text="${pedido.agenteAvaliador != null ? pedido.agenteAvaliador.nome : '-'}"></td>
-                <td>
-                    <a class="btn btn-sm btn-info" th:href="@{'/pedidos/status/' + ${pedido.id}}">Ver</a>
-                    <a th:if="${pedido.status.name() == 'PENDENTE'}" class="btn btn-sm btn-primary" th:href="@{'/avaliacoes/' + ${pedido.id}}">Avaliar</a>
-                    <form th:if="${pedido.status.name() == 'PENDENTE' or pedido.status.name() == 'APROVADO'}" 
-                          th:action="@{'/pedidos/' + ${pedido.id} + '/cancelar'}" method="post" style="display:inline">
-                        <button class="btn btn-sm btn-danger" type="submit" onclick="return confirm('Cancelar pedido?')">Cancelar</button>
-                    </form>
-                    <form th:if="${pedido.status.name() == 'APROVADO'}" 
-                          th:action="@{'/pedidos/' + ${pedido.id} + '/finalizar'}" method="post" style="display:inline">
-                        <button class="btn btn-sm btn-success" type="submit" onclick="return confirm('Finalizar pedido?')">Finalizar</button>
-                    </form>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</section>
-<th:block th:replace="~{fragments/layout :: common_scripts}"></th:block>
+    <th:block th:replace="~{fragments/layout :: common_scripts}"></th:block>
+    
+    <!-- Script para funcionalidades interativas -->
+    <script>
+        // Busca em tempo real
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const tableRows = document.querySelectorAll('#pedidosTable tbody tr');
+            let visibleCount = 0;
+            
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            document.getElementById('totalCount').textContent = visibleCount;
+        });
+
+        // Calcular estatísticas
+        function updateStats() {
+            const rows = document.querySelectorAll('#pedidosTable tbody tr');
+            let total = rows.length;
+            let pendente = 0;
+            let aprovado = 0;
+            let recusado = 0;
+            
+            rows.forEach(row => {
+                const status = row.getAttribute('data-status');
+                switch(status) {
+                    case 'PENDENTE':
+                        pendente++;
+                        break;
+                    case 'APROVADO':
+                        aprovado++;
+                        break;
+                    case 'RECUSADO':
+                        recusado++;
+                        break;
+                }
+            });
+            
+            document.getElementById('totalPedidos').textContent = total;
+            document.getElementById('pendentes').textContent = pendente;
+            document.getElementById('aprovados').textContent = aprovado;
+            document.getElementById('recusados').textContent = recusado;
+        }
+
+        // Atualizar horário atual
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleString('pt-BR');
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            updateTime();
+            setInterval(updateTime, 1000);
+            
+            // Animação de entrada para linhas da tabela
+            const rows = document.querySelectorAll('#pedidosTable tbody tr');
+            rows.forEach((row, index) => {
+                row.style.animationDelay = (index * 0.1) + 's';
+            });
+        });
+    </script>
+    
+    <footer class="footer-custom">
+        <div class="container">
+            <hr/>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>🎓 PUC Minas</h5>
+                    <p class="mb-0">Sistema de Aluguel de Carros</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <small>© 2025 - Todos os direitos reservados</small>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
 </body>
-</html>

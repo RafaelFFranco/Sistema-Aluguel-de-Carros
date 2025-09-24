@@ -1,73 +1,257 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Agentes</title>
+    <title>Agentes - Sistema de Aluguel de Carros</title>
     <th:block th:replace="~{fragments/layout :: common_head}"></th:block>
 </head>
 <body>
-<nav style="margin-bottom: 20px;">
-    <a class="btn btn-primary" th:href="@{/clientes}">Clientes</a>
-    <a class="btn btn-primary" th:href="@{/pedidos}">Pedidos</a>
-    <a class="btn btn-primary" th:href="@{/automoveis}">Automóveis</a>
-    <a class="btn btn-primary" th:href="@{/agentes}">Agentes</a>
-    <a class="btn btn-primary" th:href="@{/avaliacoes}">Avaliações</a>
-    <a class="btn btn-success" th:href="@{/pedidos/novo}">Novo Pedido</a>
-</nav>
-<section class="container py-4">
-    <h1 th:text="${titulo != null ? titulo : 'Agentes'}">Agentes</h1>
-    <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
-    <div th:if="${erro}" class="alert alert-danger" th:text="${erro}"></div>
-    
-    <div class="mb-3">
-        <a class="btn btn-primary" th:href="@{/agentes/novo}">Novo Agente</a>
-        <a class="btn btn-outline-primary" th:href="@{/agentes}">Todos</a>
-        <a class="btn btn-outline-success" th:href="@{/agentes/bancos}">Bancos</a>
-        <a class="btn btn-outline-info" th:href="@{/agentes/empresas}">Empresas</a>
+<!-- Navbar Principal -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            🚗 Sistema de Aluguel de Carros
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/clientes}">👥 Clientes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/pedidos}">📋 Pedidos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/automoveis}">🚙 Automóveis</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/agentes}">👔 Agentes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/avaliacoes}">⭐ Avaliações</a>
+                </li>
+            </ul>
+            <a class="btn btn-novo-pedido" th:href="@{/pedidos/novo}">+ Novo Pedido</a>
+        </div>
     </div>
+</nav>
+
+<div class="container py-4">
+    <main class="main-container fade-in-up">
+        <!-- Cabeçalho da Página -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="page-title" th:text="${titulo != null ? '👔 ' + titulo : '👔 Gerenciamento de Agentes'}">👔 Gerenciamento de Agentes</h1>
+            <div class="action-buttons">
+                <a class="btn btn-primary pulse" th:href="@{/agentes/novo}">
+                    ➕ Novo Agente
+                </a>
+            </div>
+        </div>
+
+        <!-- Alertas -->
+        <div th:if="${msg}" class="alert alert-success fade-in-up" th:text="${msg}"></div>
+        <div th:if="${erro}" class="alert alert-danger fade-in-up" th:text="${erro}"></div>
+
+        <!-- Área de Busca e Filtros -->
+        <div class="search-container">
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="text" class="search-input" placeholder="🔍 Buscar agentes por nome, CNPJ ou email..." id="searchInput">
+                </div>
+                <div class="col-md-6">
+                    <div class="filter-group">
+                        <a class="btn btn-outline-primary" th:href="@{/agentes}" id="filtroTodos">
+                            📊 Todos
+                        </a>
+                        <a class="btn btn-outline-success" th:href="@{/agentes/bancos}" id="filtroBancos">
+                            🏦 Bancos
+                        </a>
+                        <a class="btn btn-outline-info" th:href="@{/agentes/empresas}" id="filtroEmpresas">
+                            🏢 Empresas
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estatísticas Rápidas -->
+        <div class="stats-grid">
+            <div class="stats-card">
+                <div class="stats-number" id="totalAgentes">0</div>
+                <div class="stats-label">Total de Agentes</div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-number text-primary" id="bancos">0</div>
+                <div class="stats-label">Bancos</div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-number text-info" id="empresas">0</div>
+                <div class="stats-label">Empresas</div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-number text-success" id="ativos">0</div>
+                <div class="stats-label">Ativos</div>
+            </div>
+        </div>
+
+        <!-- Tabela de Agentes -->
+        <div class="table-container">
+            <table class="table table-striped" id="agentesTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>🏢 Nome</th>
+                        <th>📄 CNPJ</th>
+                        <th class="text-center">🏷️ Tipo</th>
+                        <th>📧 Email</th>
+                        <th class="text-center">💰 Capital Social</th>
+                        <th class="text-center">📊 Status</th>
+                        <th class="text-center">⚙️ Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="agente : ${agentes}" class="fade-in-up" th:attr="data-tipo=${agente.tipo.name()}, data-status=${agente.status.name()}">
+                        <td>
+                            <span class="badge badge-primary">#<span th:text="${agente.id}"></span></span>
+                        </td>
+                        <td>
+                            <a th:href="@{'/agentes/' + ${agente.id}}" th:text="${agente.nome}" class="fw-bold"></a>
+                        </td>
+                        <td>
+                            <code th:text="${agente.cnpj}"></code>
+                        </td>
+                        <td class="text-center">
+                            <span class="status-badge"
+                                  th:classappend="${agente.tipo.name() == 'BANCO'} ? 'status-ativo' : 'status-disponivel'"
+                                  th:text="${agente.tipo}">
+                            </span>
+                        </td>
+                        <td>
+                            <span th:text="${agente.email}"></span>
+                        </td>
+                        <td class="text-center">
+                            <strong th:text="${#numbers.formatCurrency(agente.capitalSocial)}"></strong>
+                        </td>
+                        <td class="text-center">
+                            <span class="status-badge"
+                                  th:classappend="${agente.status.name() == 'ATIVO'} ? 'status-ativo' : 
+                                                (${agente.status.name() == 'INATIVO'} ? 'status-manutencao' : 'status-pendente')"
+                                  th:text="${agente.status}">
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a class="btn-action btn-view" th:href="@{'/agentes/' + ${agente.id}}" title="Ver Detalhes">
+                                    👁️ Ver
+                                </a>
+                                <a class="btn-action btn-edit" th:href="@{'/agentes/' + ${agente.id} + '/editar'}" title="Editar Agente">
+                                    ✏️ Editar
+                                </a>
+                                <form th:action="@{'/agentes/' + ${agente.id} + '/excluir'}" method="post" style="display:inline" onsubmit="return confirm('⚠️ Tem certeza que deseja excluir este agente?')">
+                                    <button class="btn-action btn-delete" type="submit" title="Excluir Agente">
+                                        🗑️ Excluir
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Informações da Tabela -->
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <small class="text-muted">
+                Total de agentes: <strong><span id="totalCount" th:text="${#lists.size(agentes)}"></span></strong>
+            </small>
+            <small class="text-muted">
+                📊 Última atualização: <span id="currentTime"></span>
+            </small>
+        </div>
+    </main>
     
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>CNPJ</th>
-                <th>Tipo</th>
-                <th>Email</th>
-                <th>Capital Social</th>
-                <th>Status</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="agente : ${agentes}">
-                <td th:text="${agente.id}"></td>
-                <td th:text="${agente.nome}"></td>
-                <td th:text="${agente.cnpj}"></td>
-                <td>
-                    <span class="badge" 
-                          th:classappend="${agente.tipo.name() == 'BANCO'} ? 'bg-primary' : 'bg-info'"
-                          th:text="${agente.tipo}"></span>
-                </td>
-                <td th:text="${agente.email}"></td>
-                <td th:text="${#numbers.formatCurrency(agente.capitalSocial)}"></td>
-                <td>
-                    <span class="badge" 
-                          th:classappend="${agente.status.name() == 'ATIVO'} ? 'bg-success' : 
-                                        (${agente.status.name() == 'INATIVO'} ? 'bg-secondary' : 'bg-warning')"
-                          th:text="${agente.status}"></span>
-                </td>
-                <td>
-                    <a class="btn btn-sm btn-info" th:href="@{'/agentes/' + ${agente.id}}">Ver</a>
-                    <a class="btn btn-sm btn-secondary" th:href="@{'/agentes/' + ${agente.id} + '/editar'}">Editar</a>
-                    <form th:action="@{'/agentes/' + ${agente.id} + '/excluir'}" method="post" style="display:inline">
-                        <button class="btn btn-sm btn-danger" type="submit" onclick="return confirm('Excluir?')">Excluir</button>
-                    </form>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</section>
-<th:block th:replace="~{fragments/layout :: common_scripts}"></th:block>
+    <th:block th:replace="~{fragments/layout :: common_scripts}"></th:block>
+    
+    <!-- Script para funcionalidades interativas -->
+    <script>
+        // Busca em tempo real
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const tableRows = document.querySelectorAll('#agentesTable tbody tr');
+            let visibleCount = 0;
+            
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            document.getElementById('totalCount').textContent = visibleCount;
+        });
+
+        // Calcular estatísticas
+        function updateStats() {
+            const rows = document.querySelectorAll('#agentesTable tbody tr');
+            let total = rows.length;
+            let banco = 0;
+            let empresa = 0;
+            let ativo = 0;
+            
+            rows.forEach(row => {
+                const tipo = row.getAttribute('data-tipo');
+                const status = row.getAttribute('data-status');
+                
+                if (tipo === 'BANCO') banco++;
+                if (tipo === 'EMPRESA') empresa++;
+                if (status === 'ATIVO') ativo++;
+            });
+            
+            document.getElementById('totalAgentes').textContent = total;
+            document.getElementById('bancos').textContent = banco;
+            document.getElementById('empresas').textContent = empresa;
+            document.getElementById('ativos').textContent = ativo;
+        }
+
+        // Atualizar horário atual
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleString('pt-BR');
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            updateTime();
+            setInterval(updateTime, 1000);
+            
+            // Animação de entrada para linhas da tabela
+            const rows = document.querySelectorAll('#agentesTable tbody tr');
+            rows.forEach((row, index) => {
+                row.style.animationDelay = (index * 0.1) + 's';
+            });
+        });
+    </script>
+    
+    <footer class="footer-custom">
+        <div class="container">
+            <hr/>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>🎓 PUC Minas</h5>
+                    <p class="mb-0">Sistema de Aluguel de Carros</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    
+                    <small>© 2025 - Todos os direitos reservados</small>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
 </body>
-</html>
 
