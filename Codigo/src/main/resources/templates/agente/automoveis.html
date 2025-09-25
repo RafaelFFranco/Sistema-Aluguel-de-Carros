@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Automóveis - Sistema de Aluguel de Carros</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/components.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar do Agente -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="fas fa-user-tie me-2"></i>SAC - Área do Agente
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/agente/dashboard}">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/agente/pedidos}">
+                            <i class="fas fa-list-alt me-1"></i>Pedidos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/agente/automoveis}">
+                            <i class="fas fa-car me-1"></i>Automóveis
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/agente/clientes}">
+                            <i class="fas fa-users me-1"></i>Clientes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/agente/contratos}">
+                            <i class="fas fa-file-contract me-1"></i>Contratos
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="navbar-nav">
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-2 fs-5"></i>
+                            <span th:text="${agente.nome}">Agente</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" th:href="@{/agente/perfil}">
+                                <i class="fas fa-user me-2"></i>Meu Perfil
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" th:href="@{/logout}">
+                                <i class="fas fa-sign-out-alt me-2"></i>Sair
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Mensagens -->
+        <div th:if="${erro}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <span th:text="${erro}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${msg}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${msg}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="welcome-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h1><i class="fas fa-car me-3"></i>Gerenciar Automóveis</h1>
+                            <p class="lead mb-0">Cadastro e controle da frota de veículos</p>
+                        </div>
+                        <div>
+                            <a th:href="@{/automoveis/novo}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-plus me-2"></i>Novo Automóvel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Automóveis -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0"><i class="fas fa-list me-2"></i>Frota de Veículos</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${automoveis == null || automoveis.empty}" class="text-center py-5">
+                            <i class="fas fa-car fa-3x text-muted mb-3"></i>
+                            <h4 class="text-muted">Nenhum automóvel cadastrado</h4>
+                            <p class="text-muted mb-4">Comece cadastrando o primeiro veículo da frota.</p>
+                            <a th:href="@{/automoveis/novo}" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Cadastrar Primeiro Automóvel
+                            </a>
+                        </div>
+                        
+                        <div th:if="${automoveis != null && !automoveis.empty}">
+                            <!-- Filtros -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-search"></i>
+                                        </span>
+                                        <input type="text" class="form-control" id="filtroAutomovel" 
+                                               placeholder="Buscar por marca, modelo ou placa...">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex gap-2">
+                                        <select class="form-select" id="filtroStatus">
+                                            <option value="">Todos os Status</option>
+                                            <option value="DISPONIVEL">Disponível</option>
+                                            <option value="ALUGADO">Alugado</option>
+                                            <option value="MANUTENCAO">Em Manutenção</option>
+                                            <option value="INATIVO">Inativo</option>
+                                        </select>
+                                        <a th:href="@{/automoveis}" class="btn btn-outline-secondary">
+                                            <i class="fas fa-external-link-alt me-1"></i>Ver Lista Pública
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="tabelaAutomoveis">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th><i class="fas fa-hashtag me-1"></i>ID</th>
+                                            <th><i class="fas fa-car me-1"></i>Veículo</th>
+                                            <th><i class="fas fa-license-plate me-1"></i>Placa</th>
+                                            <th><i class="fas fa-calendar me-1"></i>Ano</th>
+                                            <th><i class="fas fa-info me-1"></i>Tipo</th>
+                                            <th><i class="fas fa-info-circle me-1"></i>Status</th>
+                                            <th><i class="fas fa-dollar-sign me-1"></i>Proprietário</th>
+                                            <th><i class="fas fa-cogs me-1"></i>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="auto : ${automoveis}">
+                                            <td>
+                                                <span class="badge bg-light text-dark fw-bold" 
+                                                      th:text="'#' + ${auto.id}">1</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-car me-2 text-primary"></i>
+                                                    <div>
+                                                        <div class="fw-bold" th:text="${auto.marca + ' ' + auto.modelo}">Marca Modelo</div>
+                                                        <small class="text-muted" th:text="${auto.matricula}">Matrícula</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-secondary" th:text="${auto.placa}">Placa</span>
+                                            </td>
+                                            <td th:text="${auto.ano}">Ano</td>
+                                            <td>
+                                                <span class="badge bg-light text-dark" th:text="${auto.tipoPropriedade}">Tipo</span>
+                                            </td>
+                                            <td>
+                                                <span th:class="${'badge ' + 
+                                                    (auto.status == 'DISPONIVEL' ? 'bg-success' : 
+                                                    (auto.status == 'ALUGADO' ? 'bg-warning text-dark' : 
+                                                    (auto.status == 'MANUTENCAO' ? 'bg-info' : 'bg-danger')))}"
+                                                    th:text="${auto.status}">Status</span>
+                                            </td>
+                                            <td>
+                                                <span class="fw-bold text-info" th:text="${auto.proprietarioId ?: 'N/A'}">
+                                                    N/A
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a th:href="@{/automoveis/{id}(id=${auto.id})}" 
+                                                       class="btn btn-sm btn-outline-info" title="Ver Detalhes">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a th:href="@{/automoveis/{id}/editar(id=${auto.id})}" 
+                                                       class="btn btn-sm btn-outline-primary" title="Editar">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <button type="button" class="btn btn-sm btn-outline-warning" 
+                                                            title="Alterar Status" data-bs-toggle="modal" 
+                                                            th:data-bs-target="'#modalStatus' + ${auto.id}">
+                                                        <i class="fas fa-exchange-alt"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                            title="Excluir" data-bs-toggle="modal" 
+                                                            th:data-bs-target="'#modalExcluir' + ${auto.id}">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Modais de Status e Exclusão -->
+                            <div th:each="auto : ${automoveis}">
+                                <!-- Modal Status -->
+                                <div class="modal fade" th:id="'modalStatus' + ${auto.id}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-warning text-dark">
+                                                <h5 class="modal-title">
+                                                    <i class="fas fa-exchange-alt me-2"></i>Alterar Status
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <form th:action="@{/automoveis/{id}/status(id=${auto.id})}" method="post">
+                                                <div class="modal-body">
+                                                    <p>Alterar status do veículo: 
+                                                        <strong th:text="${auto.marca + ' ' + auto.modelo}">Veículo</strong>
+                                                    </p>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Novo Status:</label>
+                                                        <select name="status" class="form-select" required>
+                                                            <option value="DISPONIVEL">Disponível</option>
+                                                            <option value="ALUGADO">Alugado</option>
+                                                            <option value="MANUTENCAO">Em Manutenção</option>
+                                                            <option value="INATIVO">Inativo</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                    <button type="submit" class="btn btn-warning">Alterar Status</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Modal Exclusão -->
+                                <div class="modal fade" th:id="'modalExcluir' + ${auto.id}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-danger text-white">
+                                                <h5 class="modal-title">
+                                                    <i class="fas fa-trash me-2"></i>Confirmar Exclusão
+                                                </h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <form th:action="@{/automoveis/{id}/excluir(id=${auto.id})}" method="post">
+                                                <div class="modal-body">
+                                                    <div class="alert alert-warning">
+                                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                                        <strong>Atenção!</strong> Esta ação não pode ser desfeita.
+                                                    </div>
+                                                    <p>Tem certeza que deseja excluir o veículo:</p>
+                                                    <p class="fw-bold text-danger" 
+                                                       th:text="${auto.marca + ' ' + auto.modelo + ' - Placa: ' + auto.placa}">
+                                                        Veículo
+                                                    </p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                    <button type="submit" class="btn btn-danger">Excluir Veículo</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Filtro de busca
+        document.getElementById('filtroAutomovel').addEventListener('keyup', function() {
+            const filtro = this.value.toLowerCase();
+            const linhas = document.querySelectorAll('#tabelaAutomoveis tbody tr');
+            
+            linhas.forEach(linha => {
+                const texto = linha.textContent.toLowerCase();
+                linha.style.display = texto.includes(filtro) ? '' : 'none';
+            });
+        });
+        
+        // Filtro de status
+        document.getElementById('filtroStatus').addEventListener('change', function() {
+            const statusFiltro = this.value;
+            const linhas = document.querySelectorAll('#tabelaAutomoveis tbody tr');
+            
+            linhas.forEach(linha => {
+                if (statusFiltro === '') {
+                    linha.style.display = '';
+                } else {
+                    const statusBadge = linha.querySelector('td:nth-child(6) .badge');
+                    const statusVeiculo = statusBadge ? statusBadge.textContent.trim() : '';
+                    linha.style.display = statusVeiculo === statusFiltro ? '' : 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

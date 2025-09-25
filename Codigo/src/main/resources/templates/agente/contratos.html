@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Contratos - Sistema de Aluguel de Carros</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/components.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar do Agente -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="fas fa-user-tie me-2"></i>SAC - Área do Agente
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/agente/dashboard}">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/agente/pedidos}">
+                            <i class="fas fa-list-alt me-1"></i>Pedidos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/agente/automoveis}">
+                            <i class="fas fa-car me-1"></i>Automóveis
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/agente/clientes}">
+                            <i class="fas fa-users me-1"></i>Clientes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/agente/contratos}">
+                            <i class="fas fa-file-contract me-1"></i>Contratos
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="navbar-nav">
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-2 fs-5"></i>
+                            <span th:text="${agente.nome}">Agente</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" th:href="@{/agente/perfil}">
+                                <i class="fas fa-user me-2"></i>Meu Perfil
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" th:href="@{/logout}">
+                                <i class="fas fa-sign-out-alt me-2"></i>Sair
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="welcome-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h1><i class="fas fa-file-contract me-3"></i>Gerenciar Contratos</h1>
+                            <p class="lead mb-0">Controle de contratos de aluguel de veículos</p>
+                        </div>
+                        <div class="text-end">
+                            <div class="row g-2">
+                                <div class="col-auto">
+                                    <div class="text-center">
+                                        <div class="h4 mb-0 text-info" th:text="${contratosAtivos ?: 0}">0</div>
+                                        <small class="text-muted">Ativos</small>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="text-center">
+                                        <div class="h4 mb-0 text-success" th:text="${contratosFinalizados ?: 0}">0</div>
+                                        <small class="text-muted">Finalizados</small>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="text-center">
+                                        <div class="h4 mb-0 text-primary" th:text="${totalContratos ?: 0}">0</div>
+                                        <small class="text-muted">Total</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Contratos -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>Lista de Contratos</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Filtros -->
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="filtroContrato" 
+                                           placeholder="Buscar por cliente ou veículo...">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="filtroStatus">
+                                    <option value="">Todos os Status</option>
+                                    <option value="ATIVO">Ativo</option>
+                                    <option value="FINALIZADO">Finalizado</option>
+                                    <option value="CANCELADO">Cancelado</option>
+                                    <option value="PENDENTE">Pendente</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="month" class="form-control" id="filtroMes" 
+                                       title="Filtrar por mês">
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-outline-secondary w-100" onclick="gerarRelatorio()">
+                                    <i class="fas fa-file-pdf me-1"></i>Relatório
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div th:if="${contratos == null || contratos.empty}" class="text-center py-5">
+                            <i class="fas fa-file-contract fa-3x text-muted mb-3"></i>
+                            <h4 class="text-muted">Nenhum contrato encontrado</h4>
+                            <p class="text-muted mb-4">Os contratos aparecerão aqui conforme os pedidos forem aprovados.</p>
+                        </div>
+                        
+                        <div th:if="${contratos != null && !contratos.empty}">
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="tabelaContratos">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th><i class="fas fa-hashtag me-1"></i>ID</th>
+                                            <th><i class="fas fa-user me-1"></i>Cliente</th>
+                                            <th><i class="fas fa-car me-1"></i>Veículo</th>
+                                            <th><i class="fas fa-calendar me-1"></i>Período</th>
+                                            <th><i class="fas fa-info-circle me-1"></i>Status</th>
+                                            <th><i class="fas fa-dollar-sign me-1"></i>Valor</th>
+                                            <th><i class="fas fa-user-tie me-1"></i>Agente</th>
+                                            <th><i class="fas fa-cogs me-1"></i>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="contrato : ${contratos}">
+                                            <td>
+                                                <span class="badge bg-light text-dark fw-bold" 
+                                                      th:text="'#' + ${contrato.id}">1</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-user-circle me-2 text-primary"></i>
+                                                    <div>
+                                                        <div class="fw-bold" th:text="${contrato.cliente.nome}">Nome</div>
+                                                        <small class="text-muted" th:text="${contrato.cliente.cpf}">CPF</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-car me-2 text-info"></i>
+                                                    <div>
+                                                        <div class="fw-bold" th:text="${contrato.automovel.marca + ' ' + contrato.automovel.modelo}">Veículo</div>
+                                                        <small class="text-muted" th:text="${contrato.automovel.placa}">Placa</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <div class="fw-bold" th:text="${#dates.format(contrato.dataInicio, 'dd/MM/yyyy')}">Início</div>
+                                                    <small class="text-muted" th:text="${#dates.format(contrato.dataFim, 'dd/MM/yyyy')}">Fim</small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span th:class="${'badge ' + 
+                                                    (contrato.status.name() == 'ATIVO' ? 'bg-success' : 
+                                                    (contrato.status.name() == 'FINALIZADO' ? 'bg-primary' : 
+                                                    (contrato.status.name() == 'PENDENTE' ? 'bg-warning text-dark' : 'bg-danger')))}"
+                                                    th:text="${contrato.status.name()}">Status</span>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <span class="fw-bold text-success">
+                                                        R$ <span th:text="${#numbers.formatDecimal(contrato.valorTotal, 1, 2)}">0,00</span>
+                                                    </span>
+                                                    <br>
+                                                    <small class="text-muted" th:text="${contrato.diasAluguel} + ' dia(s)'">Dias</small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-user-tie me-1 text-warning"></i>
+                                                    <small th:text="${contrato.agente.nome}">Agente</small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-sm btn-outline-info" 
+                                                            title="Ver Detalhes" data-bs-toggle="modal" 
+                                                            th:data-bs-target="'#modalDetalhes' + ${contrato.id}">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-success" 
+                                                            title="Imprimir Contrato" onclick="imprimirContrato()"
+                                                            th:data-contrato-id="${contrato.id}">
+                                                        <i class="fas fa-print"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-warning" 
+                                                            th:if="${contrato.status.name() == 'ATIVO'}"
+                                                            title="Finalizar" data-bs-toggle="modal" 
+                                                            th:data-bs-target="'#modalFinalizar' + ${contrato.id}">
+                                                        <i class="fas fa-flag-checkered"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                            th:if="${contrato.status.name() == 'PENDENTE'}"
+                                                            title="Cancelar" data-bs-toggle="modal" 
+                                                            th:data-bs-target="'#modalCancelar' + ${contrato.id}">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Modais para cada contrato -->
+                            <div th:each="contrato : ${contratos}">
+                                <!-- Modal Detalhes -->
+                                <div class="modal fade" th:id="'modalDetalhes' + ${contrato.id}" tabindex="-1">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-info text-white">
+                                                <h5 class="modal-title">
+                                                    <i class="fas fa-file-contract me-2"></i>Detalhes do Contrato
+                                                </h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <h6 class="text-primary">Informações do Cliente</h6>
+                                                        <p><strong>Nome:</strong> <span th:text="${contrato.cliente.nome}">Nome</span></p>
+                                                        <p><strong>CPF:</strong> <span th:text="${contrato.cliente.cpf}">CPF</span></p>
+                                                        <p><strong>Email:</strong> <span th:text="${contrato.cliente.email}">Email</span></p>
+                                                        <p><strong>Telefone:</strong> <span th:text="${contrato.cliente.telefone}">Telefone</span></p>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <h6 class="text-primary">Informações do Veículo</h6>
+                                                        <p><strong>Veículo:</strong> <span th:text="${contrato.automovel.marca + ' ' + contrato.automovel.modelo}">Veículo</span></p>
+                                                        <p><strong>Placa:</strong> <span th:text="${contrato.automovel.placa}">Placa</span></p>
+                                                        <p><strong>Ano:</strong> <span th:text="${contrato.automovel.ano}">Ano</span></p>
+                                                        <p><strong>Cor:</strong> <span th:text="${contrato.automovel.cor}">Cor</span></p>
+                                                    </div>
+                                                </div>
+                                                
+                                                <hr>
+                                                
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <h6 class="text-primary">Detalhes do Contrato</h6>
+                                                        <p><strong>Data Início:</strong> <span th:text="${#dates.format(contrato.dataInicio, 'dd/MM/yyyy HH:mm')}">Data/Hora</span></p>
+                                                        <p><strong>Data Fim:</strong> <span th:text="${#dates.format(contrato.dataFim, 'dd/MM/yyyy HH:mm')}">Data/Hora</span></p>
+                                                        <p><strong>Duração:</strong> <span th:text="${contrato.diasAluguel} + ' dia(s)'">Dias</span></p>
+                                                        <p><strong>Status:</strong> 
+                                                            <span th:class="${'badge ' + 
+                                                                (contrato.status.name() == 'ATIVO' ? 'bg-success' : 
+                                                                (contrato.status.name() == 'FINALIZADO' ? 'bg-primary' : 'bg-warning'))}"
+                                                                th:text="${contrato.status.name()}">Status</span>
+                                                        </p>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <h6 class="text-primary">Valores</h6>
+                                                        <p><strong>Valor Diária:</strong> R$ <span th:text="${#numbers.formatDecimal(contrato.automovel.valorDiaria, 1, 2)}">0,00</span></p>
+                                                        <p><strong>Valor Total:</strong> <span class="text-success fw-bold">R$ <span th:text="${#numbers.formatDecimal(contrato.valorTotal, 1, 2)}">0,00</span></span></p>
+                                                        <p><strong>Agente:</strong> <span th:text="${contrato.agente.nome}">Agente</span></p>
+                                                        <p><strong>Data Criação:</strong> <span th:text="${#dates.format(contrato.dataCriacao, 'dd/MM/yyyy HH:mm')}">Data/Hora</span></p>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div th:if="${contrato.observacoes}" class="mt-3">
+                                                    <h6 class="text-primary">Observações</h6>
+                                                    <p class="text-muted" th:text="${contrato.observacoes}">Observações</p>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                                <button type="button" class="btn btn-success" onclick="imprimirContrato()" 
+                                                        th:data-contrato-id="${contrato.id}">
+                                                    <i class="fas fa-print me-1"></i>Imprimir
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Modal Finalizar -->
+                                <div class="modal fade" th:id="'modalFinalizar' + ${contrato.id}" tabindex="-1"
+                                     th:if="${contrato.status.name() == 'ATIVO'}">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-warning text-dark">
+                                                <h5 class="modal-title">
+                                                    <i class="fas fa-flag-checkered me-2"></i>Finalizar Contrato
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <form th:action="@{/contratos/{id}/finalizar(id=${contrato.id})}" method="post">
+                                                <div class="modal-body">
+                                                    <p>Finalizar contrato com <strong th:text="${contrato.cliente.nome}">Cliente</strong>?</p>
+                                                    
+                                                    <div class="alert alert-info">
+                                                        <strong>Veículo:</strong> <span th:text="${contrato.automovel.marca + ' ' + contrato.automovel.modelo}">Veículo</span><br>
+                                                        <strong>Período:</strong> <span th:text="${#dates.format(contrato.dataInicio, 'dd/MM/yyyy') + ' a ' + #dates.format(contrato.dataFim, 'dd/MM/yyyy')}">Período</span>
+                                                    </div>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Quilometragem Final:</label>
+                                                        <input type="number" name="kmFinal" class="form-control" 
+                                                               placeholder="Digite a quilometragem atual do veículo" required>
+                                                    </div>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Observações Finais:</label>
+                                                        <textarea name="observacoesFinal" class="form-control" rows="3" 
+                                                                  placeholder="Estado do veículo, danos, combustível, etc."></textarea>
+                                                    </div>
+                                                    
+                                                    <div class="form-check">
+                                                        <input type="checkbox" name="avaliarCliente" class="form-check-input" id="avaliarCliente">
+                                                        <label class="form-check-label" for="avaliarCliente">
+                                                            Solicitar avaliação do cliente
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                    <button type="submit" class="btn btn-warning">Finalizar Contrato</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Modal Cancelar -->
+                                <div class="modal fade" th:id="'modalCancelar' + ${contrato.id}" tabindex="-1"
+                                     th:if="${contrato.status.name() == 'PENDENTE'}">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-danger text-white">
+                                                <h5 class="modal-title">
+                                                    <i class="fas fa-times me-2"></i>Cancelar Contrato
+                                                </h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <form th:action="@{/contratos/{id}/cancelar(id=${contrato.id})}" method="post">
+                                                <div class="modal-body">
+                                                    <div class="alert alert-warning">
+                                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                                        <strong>Atenção!</strong> Esta ação cancelará o contrato permanentemente.
+                                                    </div>
+                                                    
+                                                    <p>Cancelar contrato com <strong th:text="${contrato.cliente.nome}">Cliente</strong>?</p>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Motivo do Cancelamento:</label>
+                                                        <textarea name="motivo" class="form-control" rows="3" 
+                                                                  placeholder="Descreva o motivo do cancelamento..." required></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Voltar</button>
+                                                    <button type="submit" class="btn btn-danger">Cancelar Contrato</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Filtros
+        document.getElementById('filtroContrato').addEventListener('keyup', function() {
+            const filtro = this.value.toLowerCase();
+            const linhas = document.querySelectorAll('#tabelaContratos tbody tr');
+            
+            linhas.forEach(linha => {
+                const texto = linha.textContent.toLowerCase();
+                linha.style.display = texto.includes(filtro) ? '' : 'none';
+            });
+        });
+        
+        document.getElementById('filtroStatus').addEventListener('change', function() {
+            const statusFiltro = this.value;
+            const linhas = document.querySelectorAll('#tabelaContratos tbody tr');
+            
+            linhas.forEach(linha => {
+                if (statusFiltro === '') {
+                    linha.style.display = '';
+                } else {
+                    const statusBadge = linha.querySelector('td:nth-child(5) .badge');
+                    const statusContrato = statusBadge ? statusBadge.textContent.trim() : '';
+                    linha.style.display = statusContrato === statusFiltro ? '' : 'none';
+                }
+            });
+        });
+        
+        // Funções auxiliares
+        function imprimirContrato(contratoId) {
+            // Implementar impressão do contrato
+            alert('Funcionalidade de impressão será implementada em breve.');
+        }
+        
+        function gerarRelatorio() {
+            // Implementar geração de relatório
+            alert('Funcionalidade de relatório será implementada em breve.');
+        }
+    </script>
+</body>
+</html>

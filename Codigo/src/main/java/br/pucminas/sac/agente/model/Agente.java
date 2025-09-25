@@ -44,6 +44,11 @@ public class Agente {
     @Enumerated(EnumType.STRING)
     private StatusAgente status;
 
+    // Campo para login
+    @NotBlank
+    @Size(min = 8, max = 200)
+    private String senha;
+
     public enum TipoAgente {
         EMPRESA, BANCO
     }
@@ -75,5 +80,7 @@ public class Agente {
     public void setCapitalSocial(Double capitalSocial) { this.capitalSocial = capitalSocial; }
     public StatusAgente getStatus() { return status; }
     public void setStatus(StatusAgente status) { this.status = status; }
+    public String getSenha() { return senha; }
+    public void setSenha(String senha) { this.senha = senha; }
 }
 

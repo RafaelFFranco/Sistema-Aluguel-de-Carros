@@ -39,6 +39,12 @@ public class AutomovelController {
         return "automoveis/form";
     }
 
+    @GetMapping("/form")
+    public String form(Model model) {
+        // Redirect para /novo para compatibilidade
+        return "redirect:/automoveis/novo";
+    }
+
     @PostMapping
     public String criar(@Valid @ModelAttribute("automovel") Automovel automovel, BindingResult result) {
         if (result.hasErrors()) {

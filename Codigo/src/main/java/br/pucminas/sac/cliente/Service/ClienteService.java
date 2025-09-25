@@ -43,6 +43,26 @@ public class ClienteService {
     public boolean existePorRg(String rg) {
         return repository.existsByRg(rg);
     }
+    
+    public boolean existePorEmail(String email) {
+        return repository.existsByEmail(email);
+    }
+    
+    public Cliente autenticar(String email, String senha) {
+        Optional<Cliente> cliente = repository.findByEmail(email);
+        if (cliente.isPresent()) {
+            Cliente c = cliente.get();
+            // Verificar se o campo senha existe e foi preenchido
+            if (c.getSenha() != null && c.getSenha().equals(senha)) {
+                return c;
+            }
+            // Fallback para CPF caso seja um cliente antigo sem senha
+            else if (c.getSenha() == null && c.getCpf().equals(senha)) {
+                return c;
+            }
+        }
+        return null;
+    }
 }
 
 

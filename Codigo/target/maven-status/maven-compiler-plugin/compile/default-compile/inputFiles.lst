@@ -2,6 +2,9 @@ C:\Users\Enzo\Documents\GitHub\Sistema-Aluguel-de-Carros\Codigo\src\main\java\br
 C:\Users\Enzo\Documents\GitHub\Sistema-Aluguel-de-Carros\Codigo\src\main\java\br\pucminas\sac\agente\model\Agente.java
 C:\Users\Enzo\Documents\GitHub\Sistema-Aluguel-de-Carros\Codigo\src\main\java\br\pucminas\sac\agente\repository\AgenteRepository.java
 C:\Users\Enzo\Documents\GitHub\Sistema-Aluguel-de-Carros\Codigo\src\main\java\br\pucminas\sac\agente\service\AgenteService.java
+C:\Users\Enzo\Documents\GitHub\Sistema-Aluguel-de-Carros\Codigo\src\main\java\br\pucminas\sac\auth\AgenteAreaController.java
+C:\Users\Enzo\Documents\GitHub\Sistema-Aluguel-de-Carros\Codigo\src\main\java\br\pucminas\sac\auth\AuthController.java
+C:\Users\Enzo\Documents\GitHub\Sistema-Aluguel-de-Carros\Codigo\src\main\java\br\pucminas\sac\auth\ClienteAreaController.java
 C:\Users\Enzo\Documents\GitHub\Sistema-Aluguel-de-Carros\Codigo\src\main\java\br\pucminas\sac\automovel\controller\AutomovelController.java
 C:\Users\Enzo\Documents\GitHub\Sistema-Aluguel-de-Carros\Codigo\src\main\java\br\pucminas\sac\automovel\model\Automovel.java
 C:\Users\Enzo\Documents\GitHub\Sistema-Aluguel-de-Carros\Codigo\src\main\java\br\pucminas\sac\automovel\repository\AutomovelRepository.java
@@ -24,3 +27,4 @@ C:\Users\Enzo\Documents\GitHub\Sistema-Aluguel-de-Carros\Codigo\src\main\java\br
 C:\Users\Enzo\Documents\GitHub\Sistema-Aluguel-de-Carros\Codigo\src\main\java\br\pucminas\sac\pedido\Service\AvaliacaoFinanceiraService.java
 C:\Users\Enzo\Documents\GitHub\Sistema-Aluguel-de-Carros\Codigo\src\main\java\br\pucminas\sac\pedido\Service\PedidoAluguelService.java
 C:\Users\Enzo\Documents\GitHub\Sistema-Aluguel-de-Carros\Codigo\src\main\java\br\pucminas\sac\SacApplication.java
+C:\Users\Enzo\Documents\GitHub\Sistema-Aluguel-de-Carros\Codigo\src\main\java\br\pucminas\sac\teste\TesteController.java

@@ -12,6 +12,7 @@ br\pucminas\sac\agente\model\Agente$TipoAgente.class
 br\pucminas\sac\agente\model\Agente.class
 br\pucminas\sac\agente\model\Agente$StatusAgente.class
 br\pucminas\sac\contrato\model\ContratoCredito$StatusContratoCredito.class
+br\pucminas\sac\auth\AgenteAreaController.class
 br\pucminas\sac\contrato\repository\ContratoRepository.class
 br\pucminas\sac\pedido\Service\PedidoAluguelService.class
 br\pucminas\sac\pedido\repository\PedidoAluguelRepository.class
@@ -23,10 +24,14 @@ br\pucminas\sac\automovel\model\Automovel.class
 br\pucminas\sac\cliente\model\Cliente.class
 br\pucminas\sac\automovel\controller\AutomovelController.class
 br\pucminas\sac\agente\controller\AgenteController.class
+br\pucminas\sac\auth\AuthController.class
 br\pucminas\sac\pedido\model\PedidoAluguel$StatusPedido.class
+br\pucminas\sac\teste\TesteController.class
 br\pucminas\sac\contrato\service\ContratoService.class
 br\pucminas\sac\contrato\model\ContratoCredito.class
 br\pucminas\sac\cliente\repository\ClienteRepository.class
 br\pucminas\sac\automovel\repository\AutomovelRepository.class
+br\pucminas\sac\avaliacao\controller\AvaliacaoController.class
 br\pucminas\sac\pedido\controller\PedidoAluguelController.class
 br\pucminas\sac\contrato\model\Contrato$TipoContrato.class
+br\pucminas\sac\auth\ClienteAreaController.class

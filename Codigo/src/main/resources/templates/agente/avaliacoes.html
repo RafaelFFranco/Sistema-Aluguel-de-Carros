@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Aluguel de Carros - Gerenciar Avaliações</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/components.css}" rel="stylesheet">
+    <link th:href="@{/css/interactive.css}" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" th:href="@{/agente/dashboard}">
+                <i class="fas fa-user-tie me-2"></i>SAC - Área do Agente
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/agente/dashboard}">
+                            <i class="fas fa-home me-2"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/agente/automoveis}">
+                            <i class="fas fa-car me-2"></i>Automóveis
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/agente/clientes}">
+                            <i class="fas fa-users me-2"></i>Clientes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/agente/pedidos}">
+                            <i class="fas fa-file-contract me-2"></i>Pedidos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/agente/contratos}">
+                            <i class="fas fa-handshake me-2"></i>Contratos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/agente/avaliacoes}">
+                            <i class="fas fa-star me-2"></i>Avaliações
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-2"></i>Agente
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" th:href="@{/agente/perfil}">
+                                <i class="fas fa-user me-2"></i>Meu Perfil
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" th:href="@{/auth/logout}">
+                                <i class="fas fa-sign-out-alt me-2"></i>Sair
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid main-content">
+        <div class="row">
+            <!-- Page Header -->
+            <div class="col-12 mb-4">
+                <div class="page-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h1 class="h3 mb-1">
+                                <i class="fas fa-star me-3"></i>Gerenciar Avaliações
+                            </h1>
+                            <p class="text-muted mb-0">Visualize e responda às avaliações dos clientes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="col-12 mb-4">
+                <div class="row g-3">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card stats-card border-0">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-subtitle mb-2 text-muted">Total de Avaliações</h6>
+                                        <h3 class="mb-0" th:text="${avaliacoes != null ? avaliacoes.size() : 0}">0</h3>
+                                    </div>
+                                    <div class="stats-icon bg-primary">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card stats-card border-0">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-subtitle mb-2 text-muted">Média Geral</h6>
+                                        <h3 class="mb-0 text-success">4.5</h3>
+                                    </div>
+                                    <div class="stats-icon bg-success">
+                                        <i class="fas fa-thumbs-up"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card stats-card border-0">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-subtitle mb-2 text-muted">Não Respondidas</h6>
+                                        <h3 class="mb-0 text-warning">3</h3>
+                                    </div>
+                                    <div class="stats-icon bg-warning">
+                                        <i class="fas fa-reply"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card stats-card border-0">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-subtitle mb-2 text-muted">Este Mês</h6>
+                                        <h3 class="mb-0 text-info">12</h3>
+                                    </div>
+                                    <div class="stats-icon bg-info">
+                                        <i class="fas fa-calendar"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="col-12 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <form class="row g-3">
+                            <div class="col-md-4">
+                                <label for="busca" class="form-label">Buscar por Cliente</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                    <input type="text" class="form-control" id="busca" placeholder="Digite o nome do cliente...">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="nota" class="form-label">Nota</label>
+                                <select class="form-select" id="nota">
+                                    <option value="">Todas as notas</option>
+                                    <option value="5">5 estrelas</option>
+                                    <option value="4">4 estrelas</option>
+                                    <option value="3">3 estrelas</option>
+                                    <option value="2">2 estrelas</option>
+                                    <option value="1">1 estrela</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-select" id="status">
+                                    <option value="">Todos</option>
+                                    <option value="respondida">Respondida</option>
+                                    <option value="nao-respondida">Não respondida</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-filter me-2"></i>Filtrar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Avaliações List -->
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list me-2"></i>Lista de Avaliações
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div th:if="${avaliacoes == null or avaliacoes.empty}" class="text-center py-5">
+                            <div class="text-muted">
+                                <i class="fas fa-star fa-2x mb-3 d-block"></i>
+                                <p class="mb-0">Nenhuma avaliação encontrada.</p>
+                            </div>
+                        </div>
+                        
+                        <div th:each="avaliacao : ${avaliacoes}" class="border-bottom">
+                            <div class="p-4">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="d-flex align-items-start mb-3">
+                                            <div class="avatar-sm bg-light rounded-circle me-3 d-flex align-items-center justify-content-center">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                        <h6 class="mb-1" th:text="${avaliacao.cliente.nome}">João Silva</h6>
+                                                        <small class="text-muted" th:text="${avaliacao.cliente.email}">joao@email.com</small>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        <div class="rating mb-1">
+                                                            <span th:each="i : ${#numbers.sequence(1, 5)}" 
+                                                                  class="fas fa-star" 
+                                                                  th:classappend="${i <= avaliacao.nota} ? 'text-warning' : 'text-muted'">
+                                                            </span>
+                                                        </div>
+                                                        <small class="text-muted" th:text="${#dates.format(avaliacao.dataAvaliacao, 'dd/MM/yyyy')}">15/12/2023</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <h6 class="text-muted mb-2">Veículo Avaliado:</h6>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-car text-muted me-2"></i>
+                                                <span th:text="${avaliacao.automovel.marca + ' ' + avaliacao.automovel.modelo}">Honda Civic</span>
+                                                <small class="text-muted ms-2" th:text="'(' + ${avaliacao.automovel.placa} + ')'">ABC-1234</small>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <h6 class="text-muted mb-2">Comentário:</h6>
+                                            <p class="mb-0" th:text="${avaliacao.comentario}">
+                                                Excelente serviço! O carro estava em ótimas condições e o atendimento foi impecável. Recomendo!
+                                            </p>
+                                        </div>
+                                        
+                                        <div th:if="${avaliacao.resposta != null and !avaliacao.resposta.isEmpty()}" class="border-start border-3 border-primary ps-3 mt-3">
+                                            <h6 class="text-primary mb-2">
+                                                <i class="fas fa-reply me-2"></i>Sua Resposta:
+                                            </h6>
+                                            <p class="mb-0 text-muted" th:text="${avaliacao.resposta}">
+                                                Obrigado pelo feedback! Ficamos felizes em saber que você teve uma boa experiência.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-4">
+                                        <div class="text-end">
+                                            <button th:if="${avaliacao.resposta == null or avaliacao.resposta.isEmpty()}" 
+                                                    class="btn btn-primary btn-sm mb-2" 
+                                                    onclick="responderAvaliacao(this)"
+                                                    th:data-id="${avaliacao.id}"
+                                                    th:data-cliente="${avaliacao.cliente.nome}">
+                                                <i class="fas fa-reply me-2"></i>Responder
+                                            </button>
+                                            <button th:if="${avaliacao.resposta != null and !avaliacao.resposta.isEmpty()}" 
+                                                    class="btn btn-outline-secondary btn-sm mb-2" 
+                                                    onclick="editarResposta(this)"
+                                                    th:data-id="${avaliacao.id}"
+                                                    th:data-cliente="${avaliacao.cliente.nome}"
+                                                    th:data-resposta="${avaliacao.resposta}">
+                                                <i class="fas fa-edit me-2"></i>Editar Resposta
+                                            </button>
+                                            <br>
+                                            <span th:if="${avaliacao.resposta == null or avaliacao.resposta.isEmpty()}" 
+                                                  class="badge bg-warning">Não respondida</span>
+                                            <span th:if="${avaliacao.resposta != null and !avaliacao.resposta.isEmpty()}" 
+                                                  class="badge bg-success">Respondida</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Response Modal -->
+    <div class="modal fade" id="responseModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-reply text-primary me-2"></i>
+                        Responder Avaliação de <span id="clienteName"></span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="responseForm" method="post">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="resposta" class="form-label">Sua Resposta:</label>
+                            <textarea class="form-control" id="resposta" name="resposta" rows="4" 
+                                      placeholder="Digite sua resposta para o cliente..." required></textarea>
+                            <div class="form-text">
+                                Seja cordial e profissional em sua resposta. Ela será visível publicamente.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane me-2"></i>Enviar Resposta
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function responderAvaliacao(button) {
+            const id = button.getAttribute('data-id');
+            const cliente = button.getAttribute('data-cliente');
+            
+            document.getElementById('clienteName').textContent = cliente;
+            document.getElementById('resposta').value = '';
+            document.getElementById('responseForm').action = '/avaliacoes/' + id + '/responder';
+            
+            new bootstrap.Modal(document.getElementById('responseModal')).show();
+        }
+
+        function editarResposta(button) {
+            const id = button.getAttribute('data-id');
+            const cliente = button.getAttribute('data-cliente');
+            const resposta = button.getAttribute('data-resposta');
+            
+            document.getElementById('clienteName').textContent = cliente;
+            document.getElementById('resposta').value = resposta;
+            document.getElementById('responseForm').action = '/avaliacoes/' + id + '/responder';
+            
+            new bootstrap.Modal(document.getElementById('responseModal')).show();
+        }
+
+        // Auto-hide alerts
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert:not(.alert-permanent)');
+            alerts.forEach(function(alert) {
+                new bootstrap.Alert(alert).close();
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

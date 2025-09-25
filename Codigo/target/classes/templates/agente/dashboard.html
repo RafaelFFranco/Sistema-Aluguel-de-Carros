@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Agente - Sistema de Aluguel de Carros</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/components.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar do Agente -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="fas fa-user-tie me-2"></i>SAC - Área do Agente
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/agente/dashboard}">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/agente/pedidos}">
+                            <i class="fas fa-tasks me-1"></i>Pedidos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/agente/clientes}">
+                            <i class="fas fa-users me-1"></i>Clientes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/agente/automoveis}">
+                            <i class="fas fa-car me-1"></i>Automóveis
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/agente/contratos}">
+                            <i class="fas fa-file-contract me-1"></i>Contratos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/agente/avaliacoes}">
+                            <i class="fas fa-star me-1"></i>Avaliações
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="navbar-nav">
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-2 fs-5"></i>
+                            <span th:text="${agente.nome}">Agente</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" th:href="@{/agente/perfil}">
+                                <i class="fas fa-user me-2"></i>Meu Perfil
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" th:href="@{/logout}">
+                                <i class="fas fa-sign-out-alt me-2"></i>Sair
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Mensagens -->
+        <div th:if="${erro}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <span th:text="${erro}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${msg}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${msg}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Welcome -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="welcome-card">
+                    <h1><i class="fas fa-tachometer-alt me-3"></i>Dashboard do Agente</h1>
+                    <p class="lead mb-0">
+                        Bem-vindo(a), <strong th:text="${agente.nome}">Agente</strong>! 
+                        Gerencie pedidos, clientes e recursos do sistema.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estatísticas -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card stats-warning">
+                    <div class="stats-icon">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <div class="stats-info">
+                        <h3 th:text="${pedidosPendentes}">0</h3>
+                        <p>Pedidos Pendentes</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card stats-info">
+                    <div class="stats-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stats-info">
+                        <h3 th:text="${totalClientes}">0</h3>
+                        <p>Total de Clientes</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card stats-primary">
+                    <div class="stats-icon">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <div class="stats-info">
+                        <h3 th:text="${totalAutomoveis}">0</h3>
+                        <p>Automóveis</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card stats-success">
+                    <div class="stats-icon">
+                        <i class="fas fa-file-contract"></i>
+                    </div>
+                    <div class="stats-info">
+                        <h3 th:text="${totalContratos}">0</h3>
+                        <p>Contratos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ações Rápidas -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="action-cards">
+                    <h3 class="mb-3"><i class="fas fa-bolt me-2"></i>Ações Rápidas</h3>
+                    <div class="row">
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                            <a th:href="@{/agente/pedidos}" class="action-card action-warning">
+                                <i class="fas fa-tasks"></i>
+                                <h6>Avaliar Pedidos</h6>
+                                <small>Aprovar/Rejeitar</small>
+                            </a>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                            <a th:href="@{/clientes/novo}" class="action-card action-info">
+                                <i class="fas fa-user-plus"></i>
+                                <h6>Novo Cliente</h6>
+                                <small>Cadastrar</small>
+                            </a>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                            <a th:href="@{/automoveis/novo}" class="action-card action-primary">
+                                <i class="fas fa-car-side"></i>
+                                <h6>Novo Automóvel</h6>
+                                <small>Cadastrar</small>
+                            </a>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                            <a th:href="@{/agente/clientes}" class="action-card action-secondary">
+                                <i class="fas fa-users"></i>
+                                <h6>Gerenciar Clientes</h6>
+                                <small>Listar/Editar</small>
+                            </a>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                            <a th:href="@{/agente/contratos}" class="action-card action-success">
+                                <i class="fas fa-file-contract"></i>
+                                <h6>Contratos</h6>
+                                <small>Gerenciar</small>
+                            </a>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                            <a th:href="@{/agente/avaliacoes}" class="action-card action-dark">
+                                <i class="fas fa-star"></i>
+                                <h6>Avaliações</h6>
+                                <small>Relatórios</small>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pedidos Recentes -->
+        <div class="row" th:if="${pedidosRecentes != null && !pedidosRecentes.empty}">
+            <div class="col-12">
+                <div class="recent-orders">
+                    <h3 class="mb-3"><i class="fas fa-clock me-2"></i>Pedidos Pendentes Recentes</h3>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th><i class="fas fa-hashtag me-1"></i>ID</th>
+                                    <th><i class="fas fa-user me-1"></i>Cliente</th>
+                                    <th><i class="fas fa-car me-1"></i>Veículo</th>
+                                    <th><i class="fas fa-calendar me-1"></i>Data</th>
+                                    <th><i class="fas fa-info-circle me-1"></i>Status</th>
+                                    <th><i class="fas fa-cogs me-1"></i>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="pedido : ${pedidosRecentes}">
+                                    <td><span class="badge bg-light text-dark" th:text="'#' + ${pedido.id}">1</span></td>
+                                    <td th:text="${pedido.cliente.nomeCompleto}">Cliente</td>
+                                    <td th:text="${pedido.carro}">Carro</td>
+                                    <td th:text="${#temporals.format(pedido.dataPedido, 'dd/MM/yyyy HH:mm')}">Data</td>
+                                    <td>
+                                        <span class="badge bg-warning" th:text="${pedido.status.name()}">PENDENTE</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <form th:action="@{/agente/pedidos/{id}/aprovar(id=${pedido.id})}" method="post" style="display: inline;">
+                                                <button type="submit" class="btn btn-success btn-sm" title="Aprovar">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            </form>
+                                            <form th:action="@{/agente/pedidos/{id}/rejeitar(id=${pedido.id})}" method="post" style="display: inline;">
+                                                <button type="submit" class="btn btn-danger btn-sm" title="Rejeitar" 
+                                                        onclick="return confirm('Tem certeza que deseja rejeitar este pedido?')">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a th:href="@{/agente/pedidos}" class="btn btn-outline-primary">
+                            <i class="fas fa-list me-1"></i>Ver Todos os Pedidos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sem pedidos pendentes -->
+        <div class="row" th:if="${pedidosRecentes == null || pedidosRecentes.empty}">
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                    <h4 class="mt-3">Nenhum pedido pendente!</h4>
+                    <p class="text-muted">Todos os pedidos foram processados.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/interactive.js}"></script>
+</body>
+</html>

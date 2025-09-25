@@ -81,6 +81,11 @@ public class Cliente {
     // Renda total calculada
     private Double rendaTotal;
 
+    // Campo para login
+    @NotBlank
+    @Size(min = 8, max = 200)
+    private String senha;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getNomeCompleto() { return nomeCompleto; }
@@ -117,6 +122,8 @@ public class Cliente {
     public void setRendimento3(Double rendimento3) { this.rendimento3 = rendimento3; }
     public Double getRendaTotal() { return rendaTotal; }
     public void setRendaTotal(Double rendaTotal) { this.rendaTotal = rendaTotal; }
+    public String getSenha() { return senha; }
+    public void setSenha(String senha) { this.senha = senha; }
 }
 
 

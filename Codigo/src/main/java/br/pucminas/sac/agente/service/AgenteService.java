@@ -63,5 +63,25 @@ public class AgenteService {
             repository.save(agente);
         }
     }
+    
+    public boolean existePorEmail(String email) {
+        return repository.existsByEmail(email);
+    }
+    
+    public Agente autenticar(String email, String senha) {
+        Optional<Agente> agente = repository.findByEmail(email);
+        if (agente.isPresent()) {
+            Agente a = agente.get();
+            // Verificar se o campo senha existe e foi preenchido
+            if (a.getSenha() != null && a.getSenha().equals(senha)) {
+                return a;
+            }
+            // Fallback para CNPJ caso seja um agente antigo sem senha
+            else if (a.getSenha() == null && a.getCnpj().equals(senha)) {
+                return a;
+            }
+        }
+        return null;
+    }
 }
 

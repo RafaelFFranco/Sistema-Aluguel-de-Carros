@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Avaliação Financeira</title>
+    <th:block th:replace="~{fragments/layout :: common_head}"></th:block>
+</head>
+<body>
+<nav style="margin-bottom: 20px;">
+    <a class="btn btn-primary" th:href="@{/clientes}">Clientes</a>
+    <a class="btn btn-primary" th:href="@{/pedidos}">Pedidos</a>
+    <a class="btn btn-primary" th:href="@{/automoveis}">Automóveis</a>
+    <a class="btn btn-primary" th:href="@{/agentes}">Agentes</a>
+    <a class="btn btn-primary" th:href="@{/avaliacoes}">Avaliações</a>
+    <a class="btn btn-success" th:href="@{/pedidos/novo}">Novo Pedido</a>
+</nav>
+<section class="container py-4">
+    <h1>Avaliação Financeira</h1>
+    <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
+    <div th:if="${erro}" class="alert alert-danger" th:text="${erro}"></div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Informações do Pedido</h5>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">ID do Pedido</dt>
+                <dd class="col-sm-9" th:text="${pedido.id}"></dd>
+                
+                <dt class="col-sm-3">Cliente</dt>
+                <dd class="col-sm-9" th:text="${pedido.cliente.nomeCompleto}"></dd>
+                
+                <dt class="col-sm-3">CPF</dt>
+                <dd class="col-sm-9" th:text="${pedido.cliente.cpf}"></dd>
+                
+                <dt class="col-sm-3">Renda Total</dt>
+                <dd class="col-sm-9" th:text="${pedido.cliente.rendaTotal != null ? #numbers.formatCurrency(pedido.cliente.rendaTotal) : 'Não informada'}"></dd>
+                
+                <dt class="col-sm-3">Score Calculado</dt>
+                <dd class="col-sm-9">
+                    <span class="badge fs-6" 
+                          th:classappend="${scoreCalculado >= 7} ? 'bg-success' : 
+                                        (${scoreCalculado >= 5} ? 'bg-warning' : 'bg-danger')"
+                          th:text="${#numbers.formatDecimal(scoreCalculado, 1, 1)}"></span>
+                </dd>
+            </dl>
+        </div>
+    </div>
+    
+    <form th:action="@{'/avaliacoes/' + ${pedido.id}}" method="post" class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label">Agente Avaliador</label>
+            <select class="form-select" name="agenteId" required>
+                <option value="" disabled selected>Selecione um agente</option>
+                <option th:each="agente : ${agentes}" 
+                        th:value="${agente.id}" 
+                        th:text="${agente.nome + ' (' + agente.tipo + ')'}"></option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Score Final (0-10)</label>
+            <input class="form-control" type="number" name="score" min="0" max="10" step="0.1" required />
+        </div>
+        <div class="col-12">
+            <label class="form-label">Parecer Financeiro</label>
+            <select class="form-select" name="parecer" required>
+                <option value="" disabled selected>Selecione o parecer</option>
+                <option value="APROVADO">Aprovado</option>
+                <option value="APROVADO_COM_RESTRICOES">Aprovado com Restrições</option>
+                <option value="PENDENTE_DOCUMENTACAO">Pendente Documentação</option>
+                <option value="REPROVADO">Reprovado</option>
+            </select>
+        </div>
+        <div class="col-12">
+            <label class="form-label">Observações</label>
+            <textarea class="form-control" name="observacoes" rows="4" placeholder="Digite suas observações sobre a avaliação..."></textarea>
+        </div>
+        <div class="col-12">
+            <button class="btn btn-secondary" type="button" onclick="window.location.href='/avaliacoes'">Cancelar</button>
+            <button class="btn btn-primary" type="submit">Processar Avaliação</button>
+        </div>
+    </form>
+</section>
+<th:block th:replace="~{fragments/layout :: common_scripts}"></th:block>
+</body>
+</html>
+
