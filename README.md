@@ -18,12 +18,12 @@
 
 ## Diagrama de Pacotes
 <br>
-<img src="Artefatos/Diagrama de Pacotes.png"></img>
+<img src="Artefatos/Diagrama de Pacotes.jpg"></img>
 
 
 ## Diagrama de Classes
 <br>
-<img src="Artefatos/Diagrama de Classes.jpg"></img>
+<img src="https://github.com/RafaelFFranco/Sistema-Aluguel-de-Carros/blob/main/Artefatos/Class%20Diagram%20Template.jpg"></img>
 
 
 ## Diagrama de Componentes
