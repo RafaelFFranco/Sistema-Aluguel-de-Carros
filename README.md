@@ -29,3 +29,8 @@
 ## Diagrama de Componentes
 <br>
 <img src="Artefatos/Diagrama de Componentes.jpeg"></img>
+
+
+## Diagrama de Implantação
+<br>
+<img src="Artefatos/Diagrama de Implantação.jpeg"></img>
