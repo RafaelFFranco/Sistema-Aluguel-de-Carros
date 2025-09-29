@@ -34,3 +34,8 @@
 ## Diagrama de Implantação
 <br>
 <img src="Artefatos/Diagrama de Implantação.jpeg"></img>
+
+
+## Funcionamento do Sistema
+<br>
+<img src="Artefatos/MVP.gif"></img>
